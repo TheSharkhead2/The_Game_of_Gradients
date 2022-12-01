@@ -5,7 +5,7 @@ use bevy::{
     asset::AssetServer
 };
 
-use crate::constants::{NUM_ARROWS_X, NUM_ARROWS_Y, BASE_ARROW_SCALE, VERTICAL_WINDOW_HEIGHT, EXPECTED_MAX_ARROW_SCALE};
+use crate::constants::{NUM_ARROWS_X, NUM_ARROWS_Y, BASE_ARROW_SCALE, VERTICAL_WINDOW_HEIGHT, EXPECTED_MAX_ARROW_SCALE, ARROW_SCALING_FUNCTION};
 
 // This component stores the gradient field of a given level. X and Y velocities at a point.
 #[derive(Component, Clone, PartialEq, Eq, Debug, Hash, Copy)]
@@ -16,7 +16,7 @@ impl Gradient {
         -1. * y 
     }
     pub fn y(self, x: f32, y: f32) -> f32 {
-        x
+        1. * x
     }
 
     /// Get magnitude of the gradient at a point 
@@ -82,7 +82,7 @@ fn update_gradient_arrows(
         sprite.color = Color::hsla(gradient_arrow.scale/(BASE_ARROW_SCALE*EXPECTED_MAX_ARROW_SCALE)*360., 1., 0.8, 1.);
 
         *transform = Transform::from_xyz(gradient_arrow.x, gradient_arrow.y, 0.) // set position to (x,y)
-            .with_scale(Vec3::new(gradient_arrow.scale, gradient_arrow.scale, gradient_arrow.scale)) // edit scaling
+            .with_scale(Vec3::new(ARROW_SCALING_FUNCTION(gradient_arrow.scale), ARROW_SCALING_FUNCTION(gradient_arrow.scale), gradient_arrow.scale)) // edit scaling
             .with_rotation(Quat::from_rotation_z(gradient_arrow.angle)); // edit rotation
 
     }
