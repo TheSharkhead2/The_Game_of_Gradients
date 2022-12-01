@@ -13,7 +13,7 @@ pub struct Gradient;
 
 impl Gradient {
     pub fn x(self, x: f32, y: f32) -> f32 {
-        x.powf(3.)
+        x.powf(3.) + y
     }
     pub fn y(self, x: f32, y: f32) -> f32 {
         3.
