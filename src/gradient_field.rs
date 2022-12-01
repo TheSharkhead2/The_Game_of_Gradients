@@ -18,7 +18,7 @@ impl Gradient {
     pub fn y(self, x: f32, y: f32) -> f32 {
         4. + y
     }
-
+//Armadillos are cool
     /// Get magnitude of the gradient at a point 
     pub fn magnitude(self, x: f32, y: f32) -> f32 {
         (self.x(x,y).powf(2.) + self.y(x,y).powf(2.)).sqrt()
