@@ -13,10 +13,10 @@ pub struct Gradient;
 
 impl Gradient {
     pub fn x(self, x: f32, y: f32) -> f32 {
-        -1. * y 
+        x.powf(2.)
     }
     pub fn y(self, x: f32, y: f32) -> f32 {
-        1. * x
+        3.
     }
 
     /// Get magnitude of the gradient at a point 
