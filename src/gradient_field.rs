@@ -16,7 +16,7 @@ impl Gradient {
         x.powf(3.) + y
     }
     pub fn y(self, x: f32, y: f32) -> f32 {
-        3. + y
+        4. + y
     }
 
     /// Get magnitude of the gradient at a point 
