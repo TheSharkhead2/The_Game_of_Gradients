@@ -57,7 +57,7 @@ impl GameState {
                         ("y^2".into(), |_x, y| y.powf(2.)), 
                         ("3".into(), |_x, _y| 3.),
                         ("y".into(), |_x, y| y),
-                        ("x".into(), |x, _y| x),
+                        ("cos(x)".into(), |x, _y| x.cos()),
                     ],
                 }
             ],
