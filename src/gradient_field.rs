@@ -23,6 +23,15 @@ impl Gradient {
     pub fn magnitude(self, x: f32, y: f32) -> f32 {
         (self.x(x,y).powf(2.) + self.y(x,y).powf(2.)).sqrt()
     }
+
+    pub fn new() -> Self {
+        Gradient
+    }
+}
+
+/// Function for initializing gradient object
+fn initialize_gradient(mut commands: Commands) {
+    commands.spawn(Gradient::new());
 }
 
 #[derive(Component)]
@@ -59,7 +68,7 @@ fn spawn_gradient_arrows(mut commands: Commands, asset_server: Res<AssetServer>)
 
 fn update_gradient_arrows(
     mut gradient_arrows: Query<(&mut GradientArrow, &mut Sprite, &mut Transform)>,
-    gradient: Res<State<Gradient>>,
+    gradient: Query<&Gradient>,
     wnds: Res<Windows>,
 ) {
     // get main window (from https://bevy-cheatbook.github.io/cookbook/cursor2world.html)
@@ -69,15 +78,17 @@ fn update_gradient_arrows(
 
     let window_width = wnd.width() / pixel_to_coord_scale; // width of the window in world coordinates
 
+    let gradient = gradient.single(); // should only be 1 gradient
+
     for (mut gradient_arrow, mut sprite, mut transform) in gradient_arrows.iter_mut() {
         let (x_number, y_number) = (gradient_arrow.x_number, gradient_arrow.y_number); // get the index of the arrow in the x and y directions
 
         gradient_arrow.x = (x_number as f32) * window_width/((NUM_ARROWS_X as f32)-1.) - window_width/2.; // get the x coordinate of the arrow
         gradient_arrow.y = (y_number as f32) * VERTICAL_WINDOW_HEIGHT/((NUM_ARROWS_Y as f32)-1.) - VERTICAL_WINDOW_HEIGHT/2.; // get the y coordinate of the arrow 
 
-        gradient_arrow.scale = BASE_ARROW_SCALE * gradient.current().magnitude(gradient_arrow.x, gradient_arrow.y); // get the scaling factor for the arrow
+        gradient_arrow.scale = BASE_ARROW_SCALE * gradient.magnitude(gradient_arrow.x, gradient_arrow.y); // get the scaling factor for the arrow
 
-        gradient_arrow.angle = gradient.current().y(gradient_arrow.x, gradient_arrow.y).atan2(gradient.current().x(gradient_arrow.x, gradient_arrow.y)) - 0.25*PI; // get the angle of the arrow
+        gradient_arrow.angle = gradient.y(gradient_arrow.x, gradient_arrow.y).atan2(gradient.x(gradient_arrow.x, gradient_arrow.y)) - 0.25*PI; // get the angle of the arrow
 
         sprite.color = Color::hsla(gradient_arrow.scale/(BASE_ARROW_SCALE*EXPECTED_MAX_ARROW_SCALE)*360., 1., 0.8, 1.);
 
@@ -95,6 +106,7 @@ pub struct GradientArrowPlugin; // plugin for spawning and controlling gradient 
 impl Plugin for GradientArrowPlugin {
     /// Initialization 
     fn build(&self, app: &mut App) {
+        app.add_startup_system(initialize_gradient);
         app.add_startup_system(spawn_gradient_arrows);
         app.add_system(update_gradient_arrows);
     }

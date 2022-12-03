@@ -74,7 +74,6 @@ fn main() {
         .add_plugins(DefaultPlugins)
         .add_startup_system(setup)
         .add_startup_system(spawn_player)
-        .add_state(Gradient) // set initial gradient to be the identity function
         .add_state(GameState::new()) // set initial game state
         .add_state(Simulating::NotSimulating) // set initial simulating state
         .add_system(player_movement)
@@ -107,12 +106,14 @@ fn spawn_player(mut commands: Commands) {
 
 
 /// move player 
-fn player_movement(mut player: Query<(&Player, &mut Transform)>, gradient: Res<State<Gradient>>, simulating_state: Res<State<Simulating>>, game_state: Res<State<GameState>>) {
+fn player_movement(mut player: Query<(&Player, &mut Transform)>, gradient: Query<&Gradient>, simulating_state: Res<State<Simulating>>, game_state: Res<State<GameState>>) {
+    let gradient = gradient.single(); // should be exclusively 1 gradient
+ 
     match simulating_state.current() {
         Simulating::Simulating => { // move player on if currently simulating 
             for (_, mut transform) in player.iter_mut() {
-                transform.translation.x += TICK_TIME * gradient.current().x(transform.translation.x, transform.translation.y);
-                transform.translation.y += TICK_TIME * gradient.current().y(transform.translation.x, transform.translation.y);
+                transform.translation.x += TICK_TIME * gradient.x(transform.translation.x, transform.translation.y);
+                transform.translation.y += TICK_TIME * gradient.y(transform.translation.x, transform.translation.y);
             }
         }, 
         Simulating::NotSimulating => { // set player to start location when not simulating
