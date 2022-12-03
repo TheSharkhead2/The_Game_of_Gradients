@@ -5,7 +5,7 @@ use bevy::{
     asset::AssetServer
 };
 
-use crate::constants::{NUM_ARROWS_X, NUM_ARROWS_Y, BASE_ARROW_SCALE, VERTICAL_WINDOW_HEIGHT, EXPECTED_MAX_ARROW_SCALE, ARROW_SCALING_FUNCTION};
+use crate::constants::{NUM_ARROWS_X, NUM_ARROWS_Y, BASE_ARROW_SCALE, VERTICAL_WINDOW_HEIGHT, EXPECTED_MAX_ARROW_SCALE};
 
 /// This enum represents the valid operations between parts of the gradient function 
 pub enum GradientOperation {
@@ -189,7 +189,10 @@ fn update_gradient_arrows(
 
     let gradient = gradient.single(); // should only be 1 gradient
 
-    for (mut gradient_arrow, mut sprite, mut transform) in gradient_arrows.iter_mut() {
+    // precompute all of the mangitudes of the gradient at each relevant point to get the maximum magnitude 
+    let mut max_magnitude = BASE_ARROW_SCALE;
+
+    for (mut gradient_arrow, _sprite, _transform) in gradient_arrows.iter_mut() {
         let (x_number, y_number) = (gradient_arrow.x_number, gradient_arrow.y_number); // get the index of the arrow in the x and y directions
 
         gradient_arrow.x = (x_number as f32) * window_width/((NUM_ARROWS_X as f32)-1.) - window_width/2.; // get the x coordinate of the arrow
@@ -197,12 +200,20 @@ fn update_gradient_arrows(
 
         gradient_arrow.scale = BASE_ARROW_SCALE * gradient.magnitude(gradient_arrow.x, gradient_arrow.y); // get the scaling factor for the arrow
 
+        if max_magnitude < gradient_arrow.scale { // if the current magnitude is greater than the current max, update the max
+            max_magnitude = gradient_arrow.scale;
+        }
+    }
+
+    for (mut gradient_arrow, mut sprite, mut transform) in gradient_arrows.iter_mut() {
+        gradient_arrow.scale = (EXPECTED_MAX_ARROW_SCALE*BASE_ARROW_SCALE)/max_magnitude *gradient_arrow.scale;
+
         gradient_arrow.angle = gradient.y(gradient_arrow.x, gradient_arrow.y).atan2(gradient.x(gradient_arrow.x, gradient_arrow.y)) - 0.25*PI; // get the angle of the arrow
 
         sprite.color = Color::hsla(gradient_arrow.scale/(BASE_ARROW_SCALE*EXPECTED_MAX_ARROW_SCALE)*360., 1., 0.8, 1.);
 
         *transform = Transform::from_xyz(gradient_arrow.x, gradient_arrow.y, 0.) // set position to (x,y)
-            .with_scale(Vec3::new(ARROW_SCALING_FUNCTION(gradient_arrow.scale), ARROW_SCALING_FUNCTION(gradient_arrow.scale), gradient_arrow.scale)) // edit scaling
+            .with_scale(Vec3::new(gradient_arrow.scale, gradient_arrow.scale, gradient_arrow.scale)) // edit scaling
             .with_rotation(Quat::from_rotation_z(gradient_arrow.angle)); // edit rotation
 
     }
