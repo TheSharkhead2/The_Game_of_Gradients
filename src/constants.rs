@@ -7,7 +7,7 @@ pub const VERTICAL_WINDOW_HEIGHT: f32 = 20.; // world units for height of window
 pub const NUM_ARROWS_X: u32 = 11; // number of arrows in x direction
 pub const NUM_ARROWS_Y: u32 = 11; // number of arrows in y direction
 pub const BASE_ARROW_SCALE: f32 = 0.0005; // base scaling factor for arrows
-pub const EXPECTED_MAX_ARROW_SCALE: f32 = 18.; // expected maximum scaling factor from BASE_ARROW_SCALE for arrows (Could change to dynamic system based on max arrow size in future)
+pub const EXPECTED_MAX_ARROW_SCALE: f32 = 25.; // expected maximum scaling factor from BASE_ARROW_SCALE for arrows (Could change to dynamic system based on max arrow size in future)
 
 // button constants
 pub const NORMAL_BUTTON_COLOR: Color = Color::rgb(0.5, 0.5, 0.5);

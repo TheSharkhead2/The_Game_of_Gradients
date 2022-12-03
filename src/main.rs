@@ -6,6 +6,7 @@ use bevy::{
 mod constants; 
 mod gradient_field;
 mod ui;
+mod level;
 
 use constants::{TICK_TIME, VERTICAL_WINDOW_HEIGHT, BACKGROUND_COLOR};
 
