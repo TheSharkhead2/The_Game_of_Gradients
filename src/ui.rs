@@ -17,7 +17,9 @@ use crate::constants::{
     SIM_BUTTON_ON,
     SIM_BUTTON_OFF_HOVER,
     SIM_BUTTON_ON_HOVER,
-    HOVERED_PRESSED_BUTTON_COLOR
+    HOVERED_PRESSED_BUTTON_COLOR,
+    NORMAL_BUTTON_TEXT_COLOR,
+    PRESSED_BUTTON_TEXT_COLOR,
 };
 
 /// whether or not a button is for x or y
@@ -259,6 +261,7 @@ fn grad_component_button_system(
                     }
 
                     *color = NORMAL_BUTTON_COLOR.into(); // change color back to normal 
+                    text.sections[0].style.color = NORMAL_BUTTON_TEXT_COLOR; // change text color back to normal
                     button.used = false; // set button to unused 
                 } else { // if button is not used 
                     // add corresponding function to gradient 
@@ -285,6 +288,7 @@ fn grad_component_button_system(
                     }
 
                     *color = PRESSED_BUTTON_COLOR.into(); // change color to pressed 
+                    text.sections[0].style.color = PRESSED_BUTTON_TEXT_COLOR; // change text color to pressed
                     button.used = true; // set button to used 
                 }
             },
@@ -308,8 +312,12 @@ fn grad_component_button_system(
                 
                 if button.used {
                     *color = PRESSED_BUTTON_COLOR.into(); // if function has been added, changed to toggled color 
+
+                    text.sections[0].style.color = PRESSED_BUTTON_TEXT_COLOR; // change text color when pressed 
                 } else {
                     *color = NORMAL_BUTTON_COLOR.into(); // if not currently toggled, change to normal color
+
+                    text.sections[0].style.color = NORMAL_BUTTON_TEXT_COLOR; // change text color when not pressed
                 }
                 
             },
