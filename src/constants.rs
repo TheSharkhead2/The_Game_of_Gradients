@@ -1,5 +1,4 @@
 use bevy::prelude::Color;
-use std::f32::consts::PI;
 
 pub const BACKGROUND_COLOR: Color = Color::rgb(0.19, 0.19, 0.19);
 
