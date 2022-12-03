@@ -3,7 +3,7 @@ use bevy::{
     asset::AssetServer,
 };
 
-use crate::{Simulating, Gradient, GradientOperation, GameState};
+use crate::{Simulating, Gradient, GradientOperation, GameState, GradientOperationState};
 
 use crate::constants::{
     NORMAL_BUTTON_COLOR, 
@@ -58,6 +58,11 @@ pub struct XGradientText;
 #[derive(Component)]
 /// Struct to indicate gradient y function
 pub struct YGradientText;
+
+#[derive(Component)]
+pub struct OperationButton {
+    pub operation: GradientOperation,
+}
 
 fn ui_setup(
     mut commands: Commands, asset_server: Res<AssetServer>
@@ -154,6 +159,9 @@ fn ui_setup(
                                             color: Color::rgb(0.9, 0.9, 0.9),
                                         },
                                     ));
+                                })
+                                .insert(OperationButton {
+                                    operation: GradientOperation::new(), // default starting
                                 });
                         });
                 });
@@ -341,6 +349,48 @@ fn ui_setup(
         });
 }
 
+fn operation_state_button_handling(
+    mut interaction_query: Query<
+        (&Interaction, &mut BackgroundColor, &Children, &mut OperationButton),
+        (Changed<Interaction>, With<Button>),
+    >,
+    mut text_query: Query<&mut Text>,
+    mut operation_state: ResMut<State<GradientOperationState>>,
+) {
+    for  (interaction, mut color, children, mut button) in &mut interaction_query { // get button interaction
+        let mut text = text_query.get_mut(children[0]).unwrap(); // get button text
+
+        match *interaction {
+            Interaction::Clicked => {
+                *color = PRESSED_BUTTON_COLOR.into(); // change button color 
+
+                match button.operation {
+                    GradientOperation::Add => {
+                        button.operation = GradientOperation::Multiply; // cycle through operations 
+
+                        text.sections[0].value = String::from("Multiply"); // update text
+
+                        operation_state.set(GradientOperationState::Multiply).unwrap(); // update state
+                    },
+                    GradientOperation::Multiply => {
+                        button.operation = GradientOperation::Add; // cycle through operations 
+
+                        text.sections[0].value = String::from("Add"); // update text
+
+                        operation_state.set(GradientOperationState::Add).unwrap(); // update state
+                    },
+                }
+            },
+            Interaction::Hovered => {
+                *color = HOVERED_BUTTON_COLOR.into(); // change color on hover 
+            },
+            Interaction::None => {
+                *color = NORMAL_BUTTON_COLOR.into(); // change color back on no hover/interaction   
+            },
+        }
+    }
+}
+
 fn simulating_button_system(
     mut interaction_query: Query<
         (&Interaction, &mut BackgroundColor, &Children, &mut SimulatingButton),
@@ -455,6 +505,7 @@ fn grad_component_button_system(
     mut gradient: Query<&mut Gradient>,
     game_state: Query<&GameState>,
     mut simulating_state: ResMut<State<Simulating>>,
+    operation_state: Res<State<GradientOperationState>>,
 ) {
     let mut gradient = gradient.single_mut(); // get gradient
     let game_state = game_state.single(); // get game state
@@ -492,7 +543,7 @@ fn grad_component_button_system(
                             // add function to gradient 
                             gradient.add_x_function(
                                 button.id, // take button id as function id
-                                GradientOperation::Add, // TEMP, just set to add
+                                match operation_state.current() {GradientOperationState::Add => {GradientOperation::Add}, GradientOperationState::Multiply => {GradientOperation::Multiply}}, // operation based on state 
                                 game_state.level_info[game_state.current_level as usize].x_functions[button.id as usize].1, // get function
                                 game_state.level_info[game_state.current_level as usize].x_functions[button.id as usize].0.clone() // get string representing function
                             );
@@ -502,7 +553,7 @@ fn grad_component_button_system(
                             // add function to gradient 
                             gradient.add_y_function(
                                 button.id, // take button id as function id
-                                GradientOperation::Add, // TEMP, just set to add
+                                match operation_state.current() {GradientOperationState::Add => {GradientOperation::Add}, GradientOperationState::Multiply => {GradientOperation::Multiply}}, // operation based on state
                                 game_state.level_info[game_state.current_level as usize].y_functions[button.id as usize].1, // get function
                                 game_state.level_info[game_state.current_level as usize].y_functions[button.id as usize].0.clone() // get string representing function
                             );
@@ -582,5 +633,6 @@ impl Plugin for UiPlugin {
         app.add_system(simulating_button_check);
         app.add_system(x_gradient_text_system);
         app.add_system(y_gradient_text_system);
+        app.add_system(operation_state_button_handling);
     }
 }

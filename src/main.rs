@@ -9,7 +9,7 @@ mod ui;
 
 use constants::{TICK_TIME, VERTICAL_WINDOW_HEIGHT, BACKGROUND_COLOR};
 
-use gradient_field::{GradientArrowPlugin, Gradient, GradientOperation};
+use gradient_field::{GradientArrowPlugin, Gradient, GradientOperation, GradientOperationState};
 
 use ui::{UiPlugin};
 

@@ -13,6 +13,13 @@ pub enum GradientOperation {
     Multiply,
 }
 
+impl GradientOperation {
+    /// initializes enum for consistency 
+    pub fn new() -> Self {
+        GradientOperation::Add
+    }
+}
+
 /// This component stores the gradient field of a given level. X and Y velocities at a point.
 #[derive(Component)]
 pub struct Gradient {
@@ -204,6 +211,13 @@ fn update_gradient_arrows(
 
 pub struct GradientArrowPlugin; // plugin for spawning and controlling gradient arrows
 
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
+/// special state for gradient operation 
+pub enum GradientOperationState {
+    Add, // add operation 
+    Multiply, // multiply operation 
+}
+
 /// Plugin implementation 
 impl Plugin for GradientArrowPlugin {
     /// Initialization 
@@ -211,5 +225,6 @@ impl Plugin for GradientArrowPlugin {
         app.add_startup_system(initialize_gradient);
         app.add_startup_system(spawn_gradient_arrows);
         app.add_system(update_gradient_arrows);
+        app.add_state(GradientOperationState::Add); // state for when adding new functions to gradient... operation to add with 
     }
 }
