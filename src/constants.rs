@@ -16,9 +16,6 @@ pub const HOVERED_BUTTON_COLOR: Color = Color::rgb(0.6, 0.6, 0.6);
 pub const PRESSED_BUTTON_COLOR: Color = Color::rgb(0.2, 0.7, 0.2);
 pub const BUTTONS_PER_DIMENSION: u32 = 5; // number of buttons, or function components, per dimension (x, y)
 pub const BUTTON_SPACING: f32 = 10.; // spacing between buttons in pixels 
-pub const FIRST_BUTTON_X_FROM_CENTER: f32 = 0.; // x position of first button from center of screen
-pub const BUTTON_Y_FROM_BOTTOM_FOR_X: f32 = 100.; // y position of first button from bottom of screen for the X dimension
-pub const BUTTON_Y_FROM_BOTTOM_FOR_Y: f32 = 10.; // y position of first button from bottom of screen for the Y dimension
 pub const BUTTON_WIDTH: f32 = 100.; // width of buttons in pixels
 pub const BUTTON_HEIGHT: f32 = 60.; // height of buttons in pixels
 

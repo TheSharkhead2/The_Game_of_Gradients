@@ -26,7 +26,6 @@ pub struct Level {
 /// Game state. Stores relevant information about the game
 struct GameState {
     pub level_info: Vec<Level>, // essentially a constant that includes all information about levels for the game
-    pub simulating: bool, // whether or not the game is currently simulating
     pub current_level: u32, // current level number
 }
 
@@ -62,7 +61,6 @@ impl GameState {
                     ],
                 }
             ],
-            simulating: false,
             current_level: 0,
         }
     }

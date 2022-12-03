@@ -7,25 +7,62 @@ use bevy::{
 
 use crate::constants::{NUM_ARROWS_X, NUM_ARROWS_Y, BASE_ARROW_SCALE, VERTICAL_WINDOW_HEIGHT, EXPECTED_MAX_ARROW_SCALE, ARROW_SCALING_FUNCTION};
 
-// This component stores the gradient field of a given level. X and Y velocities at a point.
-#[derive(Component, Clone, PartialEq, Eq, Debug, Hash, Copy)]
-pub struct Gradient;
+/// This enum represents the valid operations between parts of the gradient function 
+pub enum GradientOperation {
+    Add,
+    Multiply,
+}
+
+/// This component stores the gradient field of a given level. X and Y velocities at a point.
+#[derive(Component)]
+pub struct Gradient {
+    pub x_functions: Vec<(u32, GradientOperation, fn(f32, f32) -> f32)>, // (function id (for current level), operation to combine with previous functions, function itself)
+    pub y_functions: Vec<(u32, GradientOperation, fn(f32, f32) -> f32)>, // (function id (for current level), operation to combine with previous functions, function itself)
+}   
 
 impl Gradient {
-    pub fn x(self, x: f32, y: f32) -> f32 {
-        x.powf(3.) + y
+    pub fn x(&self, x: f32, y: f32) -> f32 {
+        if self.x_functions.len() == 0 { // if no x functions currently in gradient, evaulate to 0
+            return 0.
+        } else {
+            let mut x_value = self.x_functions[0].2(x, y); // evaulate the first x function 
+            for function in self.x_functions.iter().skip(1) { // iterate through all other x functions
+                match function.1 { // match operation to combine with previous functions
+                    GradientOperation::Add => x_value = x_value + function.2(x,y), // add function to previous function
+                    GradientOperation::Multiply => x_value = x_value * function.2(x,y), // multiply function to previous function
+                }
+            }
+
+            x_value // return computed value 
+        }
     }
-    pub fn y(self, x: f32, y: f32) -> f32 {
-        4. + y
+    pub fn y(&self, x: f32, y: f32) -> f32 {
+        if self.y_functions.len() == 0 { // if no y functions currently in gradient, evaulate to 0 
+            return 0.
+        } else {
+            let mut y_value = self.y_functions[0].2(x, y); // evaulate the first y function
+            for function in self.y_functions.iter().skip(1) { // iterate through all other y functions
+                match function.1 { // match operation to combine with previous functions
+                    GradientOperation::Add => y_value = y_value + function.2(x,y), // add function to previous function
+                    GradientOperation::Multiply => y_value = y_value * function.2(x,y), // multiply function to previous function
+                }
+            }
+
+            y_value // return computed value
+        }
     }
 
     /// Get magnitude of the gradient at a point 
-    pub fn magnitude(self, x: f32, y: f32) -> f32 {
-        (self.x(x,y).powf(2.) + self.y(x,y).powf(2.)).sqrt()
+    pub fn magnitude(&self, x: f32, y: f32) -> f32 {
+        (&self.x(x,y).powf(2.) + &self.y(x,y).powf(2.)).sqrt()
     }
 
     pub fn new() -> Self {
-        Gradient
+        // empty grad 
+        Gradient {
+            x_functions: Vec::new(),
+            y_functions: Vec::new(),
+        }
     }
 }
 
