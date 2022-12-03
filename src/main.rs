@@ -48,9 +48,9 @@ impl GameState {
                     level_number: 0, 
                     start_location: (4., 7.),
                     x_functions: vec![
-                        ("x^2".into(), |x, _y| x.powf(2.)), 
-                        ("3".into(), |_x, _y| 3.),
-                        ("x".into(), |x, _y| x),
+                        ("-x^2".into(), |x, _y| -1.*x.powf(2.)), 
+                        ("-3".into(), |_x, _y| -3.),
+                        ("x/2".into(), |x, _y| x/2.),
                         ("y".into(), |_x, y| y),
                     ],
                     y_functions: vec![
