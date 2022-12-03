@@ -51,92 +51,107 @@ impl SimulatingButton {
     }
 }
 
-fn ui_setup(mut commands: Commands, asset_server: Res<AssetServer>, wnds: Res<Windows>) {
-    let wnd = wnds.get_primary().unwrap(); // get primary window
-
-    // place buttons for x direction 
-    for i in 0..BUTTONS_PER_DIMENSION {
-        let x_pos = wnd.width()*0.5 + FIRST_BUTTON_X_FROM_CENTER + (i as f32)*(BUTTON_WIDTH+BUTTON_SPACING); // get x position of button 
-        let y_pos =  wnd.height() - BUTTON_HEIGHT - BUTTON_Y_FROM_BOTTOM_FOR_X; // get y position of button
-
-        commands
-            .spawn( 
-                ButtonBundle {
+fn ui_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
+    commands
+        .spawn(NodeBundle {
+            style: Style {
+                size: Size::new(Val::Percent(100.), Val::Percent(100.)),
+                justify_content: JustifyContent::FlexEnd, // align to bottom of screen
+                align_content: AlignContent::FlexEnd, // align to bottom of screen
+                align_items: AlignItems::FlexEnd, // align to bottom of screen
+                flex_direction: FlexDirection::Column, // align button sets in column
+                ..default()
+            }, 
+            ..default()
+        })
+        .with_children(|parent| {
+            parent // x buttons 
+                .spawn(NodeBundle {
                     style: Style {
-                        size: Size::new(Val::Px(BUTTON_WIDTH), Val::Px(BUTTON_HEIGHT)),
-                        // margin: UiRect::all(Val::Auto),
-                        justify_content: JustifyContent::Center,
-                        align_items: AlignItems::Center,
-                        position_type: PositionType::Absolute,
-                        position: UiRect {
-                            left: Val::Px(x_pos),
-                            top: Val::Px(y_pos),
-                            ..default()
-                        },
+                        size: Size::new(Val::Percent(50.), Val::Px(BUTTON_HEIGHT + BUTTON_SPACING)), // size of button set taking up half the screen
+                        margin: UiRect::all(Val::Px(BUTTON_SPACING)),
+                        flex_direction: FlexDirection::Row, // align buttons in row
                         ..default()
                     },
-                    background_color: NORMAL_BUTTON_COLOR.into(),
                     ..default()
-                }
-            )
-            .with_children(|parent| {
-                parent.spawn(TextBundle::from_section(
-                    format!("Button {}", i),
-                    TextStyle {
-                        font: asset_server.load("../assets/fonts/tahoma.ttf"),
-                        font_size: 20.0, 
-                        color: Color::rgb(0.9, 0.9, 0.9),
-                    },
-                ));
-            })
-            .insert(GradComponentButton {
-                id: i,
-                xy: ButtonXY::X,
-                text: format!("Button {}", i),
-            });
-    }
-
-    // place buttons for y direction
-    for i in 0..BUTTONS_PER_DIMENSION {
-        let x_pos = wnd.width()*0.5 + FIRST_BUTTON_X_FROM_CENTER + (i as f32)*(BUTTON_WIDTH+BUTTON_SPACING); // get x position of button 
-        let y_pos =  wnd.height() - BUTTON_HEIGHT - BUTTON_Y_FROM_BOTTOM_FOR_Y; // get y position of button
-
-        commands
-            .spawn( 
-                ButtonBundle {
+                })
+                .with_children(|parent| {
+                    // spawn buttons 
+                    for i in 0..BUTTONS_PER_DIMENSION {
+                        parent 
+                            .spawn(ButtonBundle {
+                                style: Style {
+                                    size: Size::new(Val::Px(BUTTON_WIDTH), Val::Px(BUTTON_HEIGHT)), // size of button
+                                    margin: UiRect::all(Val::Px(BUTTON_SPACING)), // spacing between buttons
+                                    justify_content: JustifyContent::Center, // center text
+                                    align_items: AlignItems::Center, // center text
+                                    ..default()
+                                },
+                                background_color: NORMAL_BUTTON_COLOR.into(),
+                                ..default()
+                            })
+                            .with_children(|parent| {
+                                parent
+                                    .spawn(TextBundle::from_section(
+                                        format!("Button {}", i),
+                                        TextStyle {
+                                            font: asset_server.load("../assets/fonts/tahoma.ttf"),
+                                            font_size: 20.0,
+                                            color: Color::rgb(0.9, 0.9, 0.9),
+                                        },
+                                    ));
+                            })
+                            .insert(GradComponentButton {
+                                id: i,
+                                xy: ButtonXY::X,
+                                text: format!("Button {}", i),
+                            });
+                    }
+                });
+            parent // y buttons
+                .spawn(NodeBundle {
                     style: Style {
-                        size: Size::new(Val::Px(BUTTON_WIDTH), Val::Px(BUTTON_HEIGHT)),
-                        // margin: UiRect::all(Val::Auto),
-                        justify_content: JustifyContent::Center,
-                        align_items: AlignItems::Center,
-                        position_type: PositionType::Absolute,
-                        position: UiRect {
-                            left: Val::Px(x_pos),
-                            top: Val::Px(y_pos),
-                            ..default()
-                        },
+                        size: Size::new(Val::Percent(50.), Val::Px(BUTTON_HEIGHT + BUTTON_SPACING)), // size of button set taking up half the screen
+                        margin: UiRect::all(Val::Px(BUTTON_SPACING)),
+                        flex_direction: FlexDirection::Row, // align buttons in row
                         ..default()
                     },
-                    background_color: NORMAL_BUTTON_COLOR.into(),
                     ..default()
-                }
-            )
-            .with_children(|parent| {
-                parent.spawn(TextBundle::from_section(
-                    format!("Button {}", i),
-                    TextStyle {
-                        font: asset_server.load("../assets/fonts/tahoma.ttf"),
-                        font_size: 20.0, 
-                        color: Color::rgb(0.9, 0.9, 0.9),
-                    },
-                ));
-            })
-            .insert(GradComponentButton {
-                id: i,
-                xy: ButtonXY::Y,
-                text: format!("Button {}", i),
-            });
-    }
+                })
+                .with_children(|parent| {
+                    // spawn buttons 
+                    for i in 0..BUTTONS_PER_DIMENSION {
+                        parent 
+                            .spawn(ButtonBundle {
+                                style: Style {
+                                    size: Size::new(Val::Px(BUTTON_WIDTH), Val::Px(BUTTON_HEIGHT)), // size of button
+                                    margin: UiRect::all(Val::Px(BUTTON_SPACING)), // spacing between buttons
+                                    justify_content: JustifyContent::Center, // center text
+                                    align_items: AlignItems::Center, // center text
+                                    ..default()
+                                },
+                                background_color: NORMAL_BUTTON_COLOR.into(),
+                                ..default()
+                            })
+                            .with_children(|parent| {
+                                parent
+                                    .spawn(TextBundle::from_section(
+                                        format!("Button {}", i),
+                                        TextStyle {
+                                            font: asset_server.load("../assets/fonts/tahoma.ttf"),
+                                            font_size: 20.0,
+                                            color: Color::rgb(0.9, 0.9, 0.9),
+                                        },
+                                    ));
+                            })
+                            .insert(GradComponentButton {
+                                id: i,
+                                xy: ButtonXY::Y,
+                                text: format!("Button {}", i),
+                            });
+                    }
+                });
+        });
 
     // place button to toggle simulating
     commands 
