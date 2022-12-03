@@ -3,7 +3,7 @@ use bevy::{
     asset::AssetServer,
 };
 
-use crate::{Simulating};
+use crate::{Simulating, Gradient, GradientOperation, GameState};
 
 use crate::constants::{
     NORMAL_BUTTON_COLOR, 
@@ -17,6 +17,7 @@ use crate::constants::{
     SIM_BUTTON_ON,
     SIM_BUTTON_OFF_HOVER,
     SIM_BUTTON_ON_HOVER,
+    HOVERED_PRESSED_BUTTON_COLOR
 };
 
 /// whether or not a button is for x or y
@@ -31,6 +32,7 @@ pub struct GradComponentButton {
     pub id: u32, // button id for updating purposes 
     pub xy: ButtonXY, // whether or not the button is for x or y
     pub text: String, // text to display on button
+    pub used: bool, // whether or not the corresponding button has been added already
 }
 
 #[derive(Component)]
@@ -102,6 +104,7 @@ fn ui_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                                 id: i,
                                 xy: ButtonXY::X,
                                 text: format!("Button {}", i),
+                                used: false,
                             });
                     }
                 });
@@ -145,6 +148,7 @@ fn ui_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                                 id: i,
                                 xy: ButtonXY::Y,
                                 text: format!("Button {}", i),
+                                used: false,
                             });
                     }
                 });
@@ -228,28 +232,77 @@ fn simulating_button_system(
     }
 }
 
-fn button_system(
+fn grad_component_button_system(
     mut interaction_query: Query<
-        (&Interaction, &mut BackgroundColor, &Children, &GradComponentButton),
+        (&Interaction, &mut BackgroundColor, &mut GradComponentButton),
         (Changed<Interaction>, With<Button>),
     >,
-    mut text_query: Query<&mut Text>,
+    mut gradient: Query<&mut Gradient>,
+    game_state: Query<&GameState>,
 ) {
-    for (interaction, mut color, children, button) in &mut interaction_query {
-        let mut text = text_query.get_mut(children[0]).unwrap();
+    let mut gradient = gradient.single_mut(); // get gradient
+    let game_state = game_state.single(); // get game state
+
+    for (interaction, mut color, mut button) in &mut interaction_query {
+
         match *interaction {
             Interaction::Clicked => {
-                text.sections[0].value = "Press".to_string();
-                *color = PRESSED_BUTTON_COLOR.into();
-            }
+                if button.used { // if button is already used 
+                    // remove corresponding function from gradient 
+                    match button.xy {
+                        ButtonXY::X => {
+                            gradient.remove_x_function(button.id);
+                        },
+                        ButtonXY::Y => {
+                            gradient.remove_y_function(button.id);
+                        }
+                    }
+
+                    *color = NORMAL_BUTTON_COLOR.into(); // change color back to normal 
+                    button.used = false; // set button to unused 
+                } else { // if button is not used 
+                    // add corresponding function to gradient 
+                    match button.xy {
+                        ButtonXY::X => {
+                            // add function to gradient 
+                            gradient.add_x_function(
+                                button.id, // take button id as function id
+                                GradientOperation::Add, // TEMP, just set to add
+                                game_state.level_info[game_state.current_level as usize].x_functions[button.id as usize].1, // get function
+                                game_state.level_info[game_state.current_level as usize].x_functions[button.id as usize].0.clone() // get string representing function
+                            );
+
+                        },
+                        ButtonXY::Y => {
+                            // add function to gradient 
+                            gradient.add_y_function(
+                                button.id, // take button id as function id
+                                GradientOperation::Add, // TEMP, just set to add
+                                game_state.level_info[game_state.current_level as usize].y_functions[button.id as usize].1, // get function
+                                game_state.level_info[game_state.current_level as usize].y_functions[button.id as usize].0.clone() // get string representing function
+                            );
+                        },
+                    }
+
+                    *color = PRESSED_BUTTON_COLOR.into(); // change color to pressed 
+                    button.used = true; // set button to used 
+                }
+            },
             Interaction::Hovered => {
-                text.sections[0].value = "Hover".to_string();
-                *color = HOVERED_BUTTON_COLOR.into();
-            }
+                if button.used {
+                    *color = HOVERED_PRESSED_BUTTON_COLOR.into(); // if pressed, different color change on hover then when not pressed 
+                } else {
+                    *color = HOVERED_BUTTON_COLOR.into(); // color change to indicate hover
+                }
+            },
             Interaction::None => {
-                text.sections[0].value = button.text.to_string();
-                *color = NORMAL_BUTTON_COLOR.into();
-            }
+                if button.used {
+                    *color = PRESSED_BUTTON_COLOR.into(); // if function has been added, changed to toggled color 
+                } else {
+                    *color = NORMAL_BUTTON_COLOR.into(); // if not currently toggled, change to normal color
+                }
+                
+            },
         }
     }
 }
@@ -258,7 +311,7 @@ pub struct UiPlugin;
 impl Plugin for UiPlugin {
     fn build(&self, app: &mut App) {
         app.add_startup_system(ui_setup);
-        app.add_system(button_system);
+        app.add_system(grad_component_button_system);
         app.add_system(simulating_button_system);
     }
 }

@@ -9,20 +9,20 @@ mod ui;
 
 use constants::{TICK_TIME, VERTICAL_WINDOW_HEIGHT};
 
-use gradient_field::{GradientArrowPlugin, Gradient};
+use gradient_field::{GradientArrowPlugin, Gradient, GradientOperation};
 
 use ui::{UiPlugin};
 
-#[derive(Clone, Debug, Hash, PartialEq, Eq,)]
+#[derive(Clone, Debug)]
 /// struct to store level information 
 pub struct Level {
     pub level_number: u32, // level number
-    pub start_location: (i32, i32), // starting location
+    pub start_location: (f32, f32), // starting location
     pub x_functions: Vec<(String, fn(f32, f32) -> f32)>, // functions available for x dimension (String representation of function, function itself)
     pub y_functions: Vec<(String, fn(f32, f32) -> f32)>, // functions available for y dimension (String representation of function, function itself)
 }
 
-#[derive(Component, Clone, Debug, Hash, PartialEq, Eq,)]
+#[derive(Component, Clone, Debug)]
 /// Game state. Stores relevant information about the game
 struct GameState {
     pub level_info: Vec<Level>, // essentially a constant that includes all information about levels for the game
@@ -46,7 +46,7 @@ impl GameState {
             level_info: vec![
                 Level {
                     level_number: 0, 
-                    start_location: (4, 7),
+                    start_location: (4., 7.),
                     x_functions: vec![
                         ("x^2".into(), |x, _y| x.powf(2.)), 
                         ("3".into(), |_x, _y| 3.),

@@ -16,11 +16,12 @@ pub enum GradientOperation {
 /// This component stores the gradient field of a given level. X and Y velocities at a point.
 #[derive(Component)]
 pub struct Gradient {
-    pub x_functions: Vec<(u32, GradientOperation, fn(f32, f32) -> f32)>, // (function id (for current level), operation to combine with previous functions, function itself)
-    pub y_functions: Vec<(u32, GradientOperation, fn(f32, f32) -> f32)>, // (function id (for current level), operation to combine with previous functions, function itself)
+    pub x_functions: Vec<(u32, GradientOperation, fn(f32, f32) -> f32, String)>, // (function id (for current level), operation to combine with previous functions, function itself, string representing function)
+    pub y_functions: Vec<(u32, GradientOperation, fn(f32, f32) -> f32, String)>, // (function id (for current level), operation to combine with previous functions, function itself, string representing function)
 }   
 
 impl Gradient {
+    /// Compute the x value of the current gradient function at the specified point 
     pub fn x(&self, x: f32, y: f32) -> f32 {
         if self.x_functions.len() == 0 { // if no x functions currently in gradient, evaulate to 0
             return 0.
@@ -36,6 +37,8 @@ impl Gradient {
             x_value // return computed value 
         }
     }
+
+    /// Compute the y value of the current gradient function at the specified point 
     pub fn y(&self, x: f32, y: f32) -> f32 {
         if self.y_functions.len() == 0 { // if no y functions currently in gradient, evaulate to 0 
             return 0.
@@ -49,6 +52,68 @@ impl Gradient {
             }
 
             y_value // return computed value
+        }
+    }
+
+    /// Add a new x function to the gradient 
+    pub fn add_x_function(&mut self, function_id: u32, operation: GradientOperation, function: fn(f32, f32) -> f32, function_string: String) {
+        self.x_functions.push((function_id, operation, function, function_string)); // add function to x functions
+    }
+
+    /// Add a new y function to the gradient
+    pub fn add_y_function(&mut self, function_id: u32, operation: GradientOperation, function: fn(f32, f32) -> f32, function_string: String) {
+        self.y_functions.push((function_id, operation, function, function_string)); // add function to y functions
+    }
+
+    /// Remove x function from gradient. If function_id is not found, do nothing 
+    pub fn remove_x_function(&mut self, function_id: u32) {
+        let function_pos = &self.x_functions.iter().position(|x| x.0 == function_id); // search for location of function id
+
+        match function_pos {
+            Some(pos) => {self.x_functions.remove(*pos);}, // if function found, remove it from vector
+            None => (),
+        }
+    }
+
+    /// Remove y function from gradient. If function_id is not found, do nothing
+    pub fn remove_y_function(&mut self, function_id: u32) {
+        let function_pos = &self.y_functions.iter().position(|x| x.0 == function_id); // search for location of function id
+
+        match function_pos {
+            Some(pos) => {self.y_functions.remove(*pos);}, // if function found, remove it from vector
+            None => (),
+        }
+    }
+
+    /// Generates text representing the current gradient function for the x direction 
+    pub fn x_text(&self) -> String {
+        if self.x_functions.len() == 0 { // if no x functions currently in gradient, return 0
+            return String::from("0")
+        } else {
+            let mut x_text = self.x_functions[0].3.clone(); // get string representing first x function 
+            for function in self.x_functions.iter().skip(1) { // iterate through all other x functions 
+                match function.1 { // how functions are combined depends on the operation 
+                    GradientOperation::Add => {x_text = format!("{} + {}", x_text, function.3);}, // add function to previous function
+                    GradientOperation::Multiply => {x_text = format!("({}) * {}", x_text, function.3)}, // with multiplication, need to add parenthesis 
+                }
+            }
+            x_text // return string representing gradient function
+        }
+    }
+
+    /// Generates text representing the current gradient function for the y direction 
+    pub fn y_text(&self) -> String {
+        if self.y_functions.len() == 0 { // if no y functions currently in gradient, return 0
+            return String::from("0")
+        } else {
+            let mut y_text = self.y_functions[0].3.clone(); // get string representing first y function 
+            for function in self.y_functions.iter().skip(1) { // iterate through all other y functions 
+                match function.1 { // how functions are combined depends on the operation 
+                    GradientOperation::Add => {y_text = format!("{} + {}", y_text, function.3);}, // add function to previous function
+                    GradientOperation::Multiply => {y_text = format!("({}) * {}", y_text, function.3)}, // with multiplication, need to add parenthesis 
+                }
+            }
+            y_text // return string representing gradient function
         }
     }
 
