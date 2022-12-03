@@ -31,7 +31,6 @@ pub enum ButtonXY {
 pub struct GradComponentButton {
     pub id: u32, // button id for updating purposes 
     pub xy: ButtonXY, // whether or not the button is for x or y
-    pub text: String, // text to display on button
     pub used: bool, // whether or not the corresponding button has been added already
 }
 
@@ -50,7 +49,9 @@ impl SimulatingButton {
     }
 }
 
-fn ui_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
+fn ui_setup(
+    mut commands: Commands, asset_server: Res<AssetServer>
+) {
     commands
         .spawn(NodeBundle {
             style: Style {
@@ -92,7 +93,7 @@ fn ui_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                             .with_children(|parent| {
                                 parent
                                     .spawn(TextBundle::from_section(
-                                        format!("Button {}", i),
+                                        format!("x {}", i), // placeholer text to update later when start simulating frames
                                         TextStyle {
                                             font: asset_server.load("../assets/fonts/tahoma.ttf"),
                                             font_size: 20.0,
@@ -103,7 +104,6 @@ fn ui_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                             .insert(GradComponentButton {
                                 id: i,
                                 xy: ButtonXY::X,
-                                text: format!("Button {}", i),
                                 used: false,
                             });
                     }
@@ -136,7 +136,7 @@ fn ui_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                             .with_children(|parent| {
                                 parent
                                     .spawn(TextBundle::from_section(
-                                        format!("Button {}", i),
+                                        format!("y {}", i), // placeholer text to update later when start simulating frames
                                         TextStyle {
                                             font: asset_server.load("../assets/fonts/tahoma.ttf"),
                                             font_size: 20.0,
@@ -147,7 +147,6 @@ fn ui_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                             .insert(GradComponentButton {
                                 id: i,
                                 xy: ButtonXY::Y,
-                                text: format!("Button {}", i),
                                 used: false,
                             });
                     }
@@ -234,17 +233,18 @@ fn simulating_button_system(
 
 fn grad_component_button_system(
     mut interaction_query: Query<
-        (&Interaction, &mut BackgroundColor, &mut GradComponentButton),
+        (&Interaction, &mut BackgroundColor, &Children, &mut GradComponentButton),
         (Changed<Interaction>, With<Button>),
     >,
+    mut text_query: Query<&mut Text>,
     mut gradient: Query<&mut Gradient>,
     game_state: Query<&GameState>,
 ) {
     let mut gradient = gradient.single_mut(); // get gradient
     let game_state = game_state.single(); // get game state
 
-    for (interaction, mut color, mut button) in &mut interaction_query {
-
+    for (interaction, mut color, children, mut button) in &mut interaction_query {
+        let mut text = text_query.get_mut(children[0]).unwrap(); // get text of button
         match *interaction {
             Interaction::Clicked => {
                 if button.used { // if button is already used 
@@ -296,6 +296,16 @@ fn grad_component_button_system(
                 }
             },
             Interaction::None => {
+                // on every None interaction, update button text (instead of extra function)
+                match button.xy {
+                    ButtonXY::X => {
+                        text.sections[0].value = game_state.level_info[game_state.current_level as usize].x_functions[button.id as usize].0.clone(); // get string representing function
+                    },
+                    ButtonXY::Y => {
+                        text.sections[0].value = game_state.level_info[game_state.current_level as usize].y_functions[button.id as usize].0.clone(); // get string representing function
+                    },
+                }
+                
                 if button.used {
                     *color = PRESSED_BUTTON_COLOR.into(); // if function has been added, changed to toggled color 
                 } else {
