@@ -3,7 +3,7 @@ use bevy::{
     asset::AssetServer,
 };
 
-use crate::{GameState, Simulating};
+use crate::{Simulating};
 
 use crate::constants::{
     NORMAL_BUTTON_COLOR, 
@@ -13,9 +13,6 @@ use crate::constants::{
     BUTTON_HEIGHT,
     BUTTONS_PER_DIMENSION,
     BUTTON_SPACING,
-    FIRST_BUTTON_X_FROM_CENTER,
-    BUTTON_Y_FROM_BOTTOM_FOR_X,
-    BUTTON_Y_FROM_BOTTOM_FOR_Y,
     SIM_BUTTON_OFF,
     SIM_BUTTON_ON,
     SIM_BUTTON_OFF_HOVER,
@@ -201,13 +198,13 @@ fn simulating_button_system(
             Interaction::Clicked => {
                 if simulating_button.toggled { // if currently simulating 
                     simulating_button.toggled = false; // untoggle button 
-                    simulating_state.set(Simulating::NotSimulating); // stop simulating 
+                    simulating_state.set(Simulating::NotSimulating).unwrap(); // stop simulating 
 
                     text.sections[0].value = "Simulate".to_string(); // change text of button
                     *color = SIM_BUTTON_OFF.into();
                 } else { // when not toggled already
                     simulating_button.toggled = true; // toggle button 
-                    simulating_state.set(Simulating::Simulating); // start simulating 
+                    simulating_state.set(Simulating::Simulating).unwrap(); // start simulating 
 
                     text.sections[0].value = "Stop".to_string(); // change text of button
                     *color = SIM_BUTTON_ON.into();
