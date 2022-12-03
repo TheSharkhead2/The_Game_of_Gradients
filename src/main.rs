@@ -7,7 +7,7 @@ mod constants;
 mod gradient_field;
 mod ui;
 
-use constants::{TICK_TIME, VERTICAL_WINDOW_HEIGHT};
+use constants::{TICK_TIME, VERTICAL_WINDOW_HEIGHT, BACKGROUND_COLOR};
 
 use gradient_field::{GradientArrowPlugin, Gradient, GradientOperation};
 
@@ -68,7 +68,7 @@ impl GameState {
 
 fn main() {
     App::new()
-        .insert_resource(ClearColor(Color::rgb(0.19, 0.19, 0.19))) // set background color of window/game
+        .insert_resource(ClearColor(BACKGROUND_COLOR)) // set background color of window/game
         .add_plugins(DefaultPlugins)
         .add_startup_system(setup)
         .add_startup_system(spawn_player)
