@@ -22,7 +22,7 @@ pub struct Level {
     pub y_functions: Vec<(String, fn(f32, f32) -> f32)>, // functions available for y dimension (String representation of function, function itself)
 }
 
-#[derive(Clone, Debug, Hash, PartialEq, Eq,)]
+#[derive(Component, Clone, Debug, Hash, PartialEq, Eq,)]
 /// Game state. Stores relevant information about the game
 struct GameState {
     pub level_info: Vec<Level>, // essentially a constant that includes all information about levels for the game
@@ -74,7 +74,7 @@ fn main() {
         .add_plugins(DefaultPlugins)
         .add_startup_system(setup)
         .add_startup_system(spawn_player)
-        .add_state(GameState::new()) // set initial game state
+        .add_startup_system(initialize_gamestate)
         .add_state(Simulating::NotSimulating) // set initial simulating state
         .add_system(player_movement)
         .add_plugin(GradientArrowPlugin)
@@ -106,8 +106,9 @@ fn spawn_player(mut commands: Commands) {
 
 
 /// move player 
-fn player_movement(mut player: Query<(&Player, &mut Transform)>, gradient: Query<&Gradient>, simulating_state: Res<State<Simulating>>, game_state: Res<State<GameState>>) {
+fn player_movement(mut player: Query<(&Player, &mut Transform)>, gradient: Query<&Gradient>, simulating_state: Res<State<Simulating>>, game_state: Query<&GameState>) {
     let gradient = gradient.single(); // should be exclusively 1 gradient
+    let game_state = game_state.single(); // should be exclusively 1 game state
  
     match simulating_state.current() {
         Simulating::Simulating => { // move player on if currently simulating 
@@ -118,9 +119,15 @@ fn player_movement(mut player: Query<(&Player, &mut Transform)>, gradient: Query
         }, 
         Simulating::NotSimulating => { // set player to start location when not simulating
             for (_, mut transform) in player.iter_mut() {
-                transform.translation.x = game_state.current().level_info[game_state.current().current_level as usize].start_location.0 as f32;
-                transform.translation.y = game_state.current().level_info[game_state.current().current_level as usize].start_location.1 as f32;
+                transform.translation.x = game_state.level_info[game_state.current_level as usize].start_location.0 as f32;
+                transform.translation.y = game_state.level_info[game_state.current_level as usize].start_location.1 as f32;
             }
         },
     } 
+}
+
+/// Setup game state 
+fn initialize_gamestate(mut commands: Commands) {
+    commands
+        .spawn(GameState::new()); // spawn game state
 }
