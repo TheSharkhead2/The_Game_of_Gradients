@@ -1,5 +1,8 @@
 use bevy::prelude::Color;
 
+pub const PLAYER_SCALE: f32 = 0.05;
+pub const PORTAL_SCALE: f32 = 0.1;
+
 pub const BACKGROUND_COLOR: Color = Color::rgb(0.19, 0.19, 0.19);
 
 pub const TICK_TIME: f32 = 0.001; // "time" for velocity jumps per tick. controls speed of player

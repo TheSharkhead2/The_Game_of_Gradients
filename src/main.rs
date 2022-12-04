@@ -9,11 +9,13 @@ mod gradient_field;
 mod ui;
 mod level;
 
-use constants::{TICK_TIME, VERTICAL_WINDOW_HEIGHT, BACKGROUND_COLOR, BASE_ARROW_SCALE};
+use constants::{TICK_TIME, VERTICAL_WINDOW_HEIGHT, BACKGROUND_COLOR, PLAYER_SCALE};
 
 use gradient_field::{GradientArrowPlugin, Gradient, GradientOperation, GradientOperationState};
 
 use ui::{UiPlugin};
+
+use level::{LevelPlugin};
 
 #[derive(Clone, Debug)]
 /// struct to store level information 
@@ -81,6 +83,7 @@ fn main() {
         .add_system(player_movement)
         .add_plugin(GradientArrowPlugin)
         .add_plugin(UiPlugin)
+        .add_plugin(LevelPlugin)
         .run();
 } 
 
@@ -96,9 +99,9 @@ fn setup(mut commands: Commands) {
 fn spawn_player(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands
         .spawn(SpriteBundle {
-            texture: asset_server.load("../assets/pixil-frame-0 (1).png"),        
+            texture: asset_server.load("../assets/player.png"),        
             transform: Transform::from_xyz(0., 0., 0.) // set initial position to (0,0)
-                    .with_scale(Vec3::new(100.*BASE_ARROW_SCALE, 100.*BASE_ARROW_SCALE, 1.)) // with no scaling 
+                    .with_scale(Vec3::new(PLAYER_SCALE, PLAYER_SCALE, 1.)) // with no scaling 
                     .with_rotation(Quat::from_rotation_z(0.)), // with no rotation
                 ..default()
             
