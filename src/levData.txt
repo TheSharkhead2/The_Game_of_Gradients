@@ -57,9 +57,9 @@ Level 8:
 
 
 Level 9:
-   Start Pos:
-   End Pos:
-   Solution:
+   Start Pos: (-10,0)
+   End Pos: (10,0)
+   Solution: 
 
 Level 10:
    Start Pos:

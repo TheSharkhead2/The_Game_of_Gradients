@@ -64,18 +64,18 @@ impl GameState {
                     end_location: (0., 0.),
                     x_functions: vec![
                         ("x^2".into(), |x, _y| x.powf(2.)), 
-                        ("1".into(), |_x, _y| 10.),
+                        ("1".into(), |_x, _y| 3.),
                         ("-1".into(), |_x, _y| -1.),
                         ("y".into(), |_x, y| y),
                     ],
                     y_functions: vec![
                         ("-100".into(), |_x, _y| -100.), 
-                        ("1".into(), |_x, _y| (10.)),
+                        ("1".into(), |_x, _y| (3.)),
                         ("x".into(), |x, _y| x),
                         ("y".into(), |_x, y| y),
                     ],
                     gas_locations: Vec::new(),
-                    tick_time: 0.01,
+                    tick_time: 0.005,
                 },
                 Level {
                     level_number: 1, 
@@ -136,7 +136,7 @@ impl GameState {
                 },
                 Level {
                     level_number: 4, 
-                    start_location: (-15.,15.),
+                    start_location: (-15.,-15.),
                     end_location: (0., 0.),
                     x_functions: vec![
                         ("-x".into(), |x, _y| -1.*x), 
@@ -150,8 +150,8 @@ impl GameState {
                         ("sin(x)".into(), |x, _y| x.sin()),
                         ("-1".into(), |_x, _y| -1.),
                         ],
-                    gas_locations: vec![(-14.,-7.5)],
-                    tick_time: 0.01,
+                    gas_locations: vec![(-14.,-7.5),(-10., 0.), (0., 2.1) ],
+                    tick_time: 0.001,
                 },
                 Level {
                     level_number: 5, 
@@ -169,8 +169,8 @@ impl GameState {
                         ("cbrt(y)".into(), |x, _y| x.cbrt()),
                         ("-1".into(), |_x, _y| -1.),
                         ],
-                    gas_locations: vec![(-14.,-7.5)],
-                    tick_time: 0.01,
+                    gas_locations: Vec::new(),
+                    tick_time: 0.0001,
                 },
 
             ],
