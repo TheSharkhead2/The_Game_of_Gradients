@@ -206,7 +206,7 @@ fn update_gradient_arrows(
     }
 
     for (mut gradient_arrow, mut sprite, mut transform) in gradient_arrows.iter_mut() {
-        gradient_arrow.scale = (EXPECTED_MAX_ARROW_SCALE*BASE_ARROW_SCALE)/max_magnitude *gradient_arrow.scale;
+        gradient_arrow.scale = (EXPECTED_MAX_ARROW_SCALE*BASE_ARROW_SCALE)*(1./(max_magnitude*0.6) * gradient_arrow.scale).powf(0.33);
 
         gradient_arrow.angle = gradient.y(gradient_arrow.x, gradient_arrow.y).atan2(gradient.x(gradient_arrow.x, gradient_arrow.y)) - 0.25*PI; // get the angle of the arrow
 
