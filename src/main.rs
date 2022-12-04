@@ -11,7 +11,8 @@ mod gradient_field;
 mod ui;
 mod level;
 
-use constants::{TICK_TIME, VERTICAL_WINDOW_HEIGHT, BACKGROUND_COLOR, PLAYER_SCALE};
+//use constants::{TICK_TIME, VERTICAL_WINDOW_HEIGHT, BACKGROUND_COLOR, PLAYER_SCALE};
+use constants::{VERTICAL_WINDOW_HEIGHT, BACKGROUND_COLOR, PLAYER_SCALE};
 
 use gradient_field::{GradientArrowPlugin, Gradient, GradientOperation, GradientOperationState};
 
@@ -28,6 +29,7 @@ pub struct Level {
     pub x_functions: Vec<(String, fn(f32, f32) -> f32)>, // functions available for x dimension (String representation of function, function itself)
     pub y_functions: Vec<(String, fn(f32, f32) -> f32)>, // functions available for y dimension (String representation of function, function itself)
     pub gas_locations: Vec<(f32, f32)>, // locations of gas stops
+    pub tick_time: f32,
 }
 
 #[derive(Component, Clone, Debug)]
@@ -58,22 +60,42 @@ impl GameState {
             level_info: vec![
                 Level {
                     level_number: 0, 
-                    start_location: (0., 10.),
-                    end_location: (10., 4.3),
+                    start_location: (-15., -15.),
+                    end_location: (0., 0.),
                     x_functions: vec![
-                        ("x^2".into(), |x, _y| x.powf(2.)), 
-                        ("-1".into(), |_x, _y| -1.),
-                        ("1".into(), |_x, _y| 1.),
+                        ("x".into(), |x, _y| x), 
                         ("y".into(), |_x, y| y),
+                        ("1".into(), |_x, _y| 1.),
+                        ("-1".into(), |_x, _y| -1.),
                     ],
                     y_functions: vec![
-                        ("-1".into(), |_x, _y| -1.), 
-                        ("1/2".into(), |_x, _y| (1./2.)),
-                        ("x".into(), |x, _y| x),
+                        ("x".into(), |x, _y| x), 
                         ("y".into(), |_x, y| y),
+                        ("1".into(), |_x, _y| 1.),
+                        ("-1".into(), |_x, _y| -1.),
+                        ],
+                    gas_locations: Vec::new(),
+                    tick_time: 0.01
+                },
+                Level {
+                    level_number: 1, 
+                    start_location: (0., 0.),
+                    end_location: (3., 9.),
+                    x_functions: vec![
+                        ("x^2".into(), |x, _y| x.powf(2.)), 
+                        ("y^2".into(), |_x, y| y.powf(2.)),
+                        ("1".into(), |_x, _y| 1.),
+                        ("-1".into(), |_x, _y| -1.),
                     ],
-                    gas_locations: vec![(1., 0.)],
-                }
+                    y_functions: vec![
+                        ("x^2".into(), |x, _y| x.powf(2.)), 
+                        ("y^2".into(), |_x, y| y.powf(2.)),
+                        ("1".into(), |_x, _y| 1.),
+                        ("-1".into(), |_x, _y| -1.),
+                        ],
+                    gas_locations: Vec::new(),
+                    tick_time: 0.01
+                },
             ],
             current_level: 0,
             gas_collected: vec![0],
@@ -128,8 +150,10 @@ fn player_movement(mut player: Query<(&mut Player, &mut Transform)>, gradient: Q
     match simulating_state.current() {
         Simulating::Simulating => { // move player on if currently simulating 
             for (mut player_struct, mut transform) in player.iter_mut() {
-                transform.translation.x += TICK_TIME * gradient.x(transform.translation.x, transform.translation.y);
-                transform.translation.y += TICK_TIME * gradient.y(transform.translation.x, transform.translation.y);
+                transform.translation.x += game_state.level_info[game_state.current_level as usize].tick_time * gradient.x(transform.translation.x, transform.translation.y);
+                transform.translation.y += game_state.level_info[game_state.current_level as usize].tick_time * gradient.y(transform.translation.x, transform.translation.y);
+                //transform.translation.x += TICK_TIME * gradient.x(transform.translation.x, transform.translation.y);
+                //transform.translation.y += TICK_TIME * gradient.y(transform.translation.x, transform.translation.y);
 
                 // update player struct coords
                 player_struct.x = transform.translation.x;
