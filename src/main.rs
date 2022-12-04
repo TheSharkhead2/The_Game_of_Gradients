@@ -55,7 +55,7 @@ impl GameState {
                     end_location: (5., 0.),
                     x_functions: vec![
                         ("-x^2".into(), |x, _y| -1.*x.powf(2.)), 
-                        ("-3".into(), |_x, _y| -3.),
+                        ("3".into(), |_x, _y| 3.),
                         ("x/2".into(), |x, _y| x/2.),
                         ("y".into(), |_x, y| y),
                     ],
@@ -100,7 +100,7 @@ fn spawn_player(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands
         .spawn(SpriteBundle {
             texture: asset_server.load("../assets/player.png"),        
-            transform: Transform::from_xyz(0., 0., 0.) // set initial position to (0,0)
+            transform: Transform::from_xyz(0., 0., 1.) // set initial position to (0,0)
                     .with_scale(Vec3::new(PLAYER_SCALE, PLAYER_SCALE, 1.)) // with no scaling 
                     .with_rotation(Quat::from_rotation_z(0.)), // with no rotation
                 ..default()

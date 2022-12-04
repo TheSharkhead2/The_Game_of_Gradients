@@ -5,6 +5,7 @@ pub const PORTAL_SCALE: f32 = 0.1;
 
 pub const BACKGROUND_COLOR: Color = Color::rgb(0.19, 0.19, 0.19);
 
+pub const FIELD_SCALE: f32 = 10.; // scalar value to increase field strength by **CHANGE THIS INSTEAD OF TICK TIME**
 pub const TICK_TIME: f32 = 0.001; // "time" for velocity jumps per tick. controls speed of player
 pub const VERTICAL_WINDOW_HEIGHT: f32 = 20.; // world units for height of window
 pub const NUM_ARROWS_X: u32 = 11; // number of arrows in x direction

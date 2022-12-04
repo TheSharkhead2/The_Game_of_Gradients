@@ -5,7 +5,7 @@ use bevy::{
     asset::AssetServer
 };
 
-use crate::constants::{NUM_ARROWS_X, NUM_ARROWS_Y, BASE_ARROW_SCALE, VERTICAL_WINDOW_HEIGHT, EXPECTED_MAX_ARROW_SCALE};
+use crate::constants::{NUM_ARROWS_X, NUM_ARROWS_Y, BASE_ARROW_SCALE, VERTICAL_WINDOW_HEIGHT, EXPECTED_MAX_ARROW_SCALE, FIELD_SCALE};
 
 /// This enum represents the valid operations between parts of the gradient function 
 pub enum GradientOperation {
@@ -41,7 +41,7 @@ impl Gradient {
                 }
             }
 
-            x_value // return computed value 
+            FIELD_SCALE*x_value // return computed value 
         }
     }
 
@@ -58,7 +58,7 @@ impl Gradient {
                 }
             }
 
-            y_value // return computed value
+            FIELD_SCALE*y_value // return computed value
         }
     }
 
@@ -122,6 +122,12 @@ impl Gradient {
             }
             y_text // return string representing gradient function
         }
+    }
+
+    /// Clears gradient field back to 0
+    pub fn clear_field(&mut self) {
+        self.x_functions.clear(); // clear x functions
+        self.y_functions.clear(); // clear y functions
     }
 
     /// Get magnitude of the gradient at a point 

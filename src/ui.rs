@@ -64,6 +64,10 @@ pub struct YGradientText;
 pub struct LevelText;
 
 #[derive(Component)]
+/// struct to label level change text 
+pub struct NewLevelText;
+
+#[derive(Component)]
 pub struct OperationButton {
     pub operation: GradientOperation,
 }
@@ -75,17 +79,18 @@ fn ui_setup(
         .spawn(NodeBundle {
             style: Style {
                 size: Size::new(Val::Percent(100.), Val::Percent(100.)),
+                justify_content: JustifyContent::SpaceBetween,
                 flex_direction: FlexDirection::Column,
                 ..default()
             },
             ..default()
         })
         .with_children(|parent| {
-            // place button to toggle addition/multiplication and simulate button 
+            // place simulate button and level text
             parent
                 .spawn(NodeBundle {
                     style: Style {
-                        size: Size::new(Val::Percent(100.), Val::Percent(50.)),
+                        size: Size::new(Val::Percent(100.), Val::Percent(40.)),
                         justify_content: JustifyContent::SpaceBetween,
                         align_items: AlignItems::FlexStart,
                         ..default() 
@@ -168,10 +173,35 @@ fn ui_setup(
                         });
                 });
 
+            // level complete text
+            parent 
+                .spawn(NodeBundle {
+                    style: Style {
+                        size: Size::new(Val::Percent(20.), Val::Percent(20.)),
+                        justify_content: JustifyContent::Center,
+                        align_items: AlignItems::Center,
+                        ..default()
+                    },
+                    ..default()
+                })
+                .with_children(|parent| {
+                    parent 
+                        .spawn(TextBundle::from_section(
+                            "Level ",
+                            TextStyle {
+                                font: asset_server.load("../assets/fonts/tahoma.ttf"),
+                                font_size: 40.0, 
+                                color: Color::rgba(0.7, 0.9, 0.7, 0.),
+                            },
+                        ))
+                        .insert(NewLevelText);
+                });
+
+            // x and y components text and add/multiply button
             parent
                 .spawn(NodeBundle {
                     style: Style {
-                        size: Size::new(Val::Percent(100.), Val::Percent(50.)),
+                        size: Size::new(Val::Percent(100.), Val::Percent(40.)),
                         justify_content: JustifyContent::SpaceAround, // align to bottom of screen
                         align_content: AlignContent::SpaceAround, // align to bottom of screen
                         align_items: AlignItems::FlexEnd, // align to bottom of screen
