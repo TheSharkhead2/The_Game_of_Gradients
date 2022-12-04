@@ -55,7 +55,7 @@ impl GameState {
                     end_location: (5., 0.),
                     x_functions: vec![
                         ("-x^2".into(), |x, _y| -1.*x.powf(2.)), 
-                        ("-3".into(), |_x, _y| -3.),
+                        ("-20".into(), |_x, _y| -20.),
                         ("x/2".into(), |x, _y| x/2.),
                         ("y".into(), |_x, y| y),
                     ],

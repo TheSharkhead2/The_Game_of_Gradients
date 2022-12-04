@@ -4,41 +4,50 @@ Level 1:
    Solution: ▽f(x, y) = [x, y]
 
 Level 2:
-   Start Pos:
-   Solution:
+   Start Pos: (5,-5)
+   End Pos: (0, 9)
+   Solution: y = cosx
+             x = -3(x/2)
 
 Level 3:
    Start Pos:
+   End Pos:
    Solution:
 
 Level 4:
    Start Pos:
+   End Pos:
    Solution:
 
 Level 5:
    Start Pos: (x_min, y_min); Make x_min = y_min
    End Pos: (0, 0)
-   Gas1 Pos: 
+   Gas1 Pos: ()
    Gas2 Pos:
    Gas3 Pos:
    Solution: ▽f(x, y) = [y - x, -1 * (x + y)]
 
 Level 6:
    Start Pos:
+   End Pos:
    Solution:
 
 Level 7:
    Start Pos:
+   End Pos:
    Solution:
 
 Level 8:
    Start Pos:
+   End Pos:
    Solution:
 
 Level 9:
    Start Pos:
+   End Pos:
    Solution:
 
 Level 10:
    Start Pos:
+   End Pos:
    Solution:
