@@ -37,6 +37,7 @@ Level 5:
 Level 6:
    Start Pos: (-15,15)
    End Pos: (0,15)
+   Gas0 Pos ()
    Solution: x = cbrt(x) + 300
              y = (-x^2) * cbrt(y)
 
