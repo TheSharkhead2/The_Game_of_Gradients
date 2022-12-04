@@ -20,6 +20,8 @@ use crate::constants::{
     HOVERED_PRESSED_BUTTON_COLOR,
     NORMAL_BUTTON_TEXT_COLOR,
     PRESSED_BUTTON_TEXT_COLOR,
+    NEW_LEVEL_TEXT_FADE_IN_SPEED,
+    LEVEL_COMPLETE_TEXT_COLOR
 };
 
 /// whether or not a button is for x or y
@@ -65,7 +67,24 @@ pub struct LevelText;
 
 #[derive(Component)]
 /// struct to label level change text 
-pub struct NewLevelText;
+pub struct NewLevelText {
+    pub alpha: f32, // alpha value for fading in and out
+    pub fade_in: bool, // whether or not the text is fading in
+    pub fade_out: bool, // whether or not the text is fading out
+    pub level: u32, // level number
+}
+
+impl NewLevelText {
+    /// New method. Starts with alpha value of 0 and not fading in or out
+    pub fn new() -> Self {
+        Self {
+            alpha: 0.,
+            fade_in: false,
+            fade_out: false,
+            level: 0, // start at level 0
+        }
+    }
+}
 
 #[derive(Component)]
 pub struct OperationButton {
@@ -177,7 +196,7 @@ fn ui_setup(
             parent 
                 .spawn(NodeBundle {
                     style: Style {
-                        size: Size::new(Val::Percent(20.), Val::Percent(20.)),
+                        size: Size::new(Val::Percent(100.), Val::Percent(20.)),
                         justify_content: JustifyContent::Center,
                         align_items: AlignItems::Center,
                         ..default()
@@ -190,11 +209,11 @@ fn ui_setup(
                             "Level ",
                             TextStyle {
                                 font: asset_server.load("../assets/fonts/tahoma.ttf"),
-                                font_size: 40.0, 
+                                font_size: 80.0, 
                                 color: Color::rgba(0.7, 0.9, 0.7, 0.),
                             },
                         ))
-                        .insert(NewLevelText);
+                        .insert(NewLevelText::new());
                 });
 
             // x and y components text and add/multiply button
@@ -446,6 +465,36 @@ fn ui_setup(
         });
 }
 
+/// Update system for new level text 
+fn new_level_text_system(
+    mut query: Query<(&mut Text, &mut NewLevelText)>,
+) {
+    let (mut text, mut text_info) = query.single_mut();
+
+    // update text
+    if text_info.fade_in { // if currently fading in, increment alpha until 1.0 
+        text_info.alpha += NEW_LEVEL_TEXT_FADE_IN_SPEED; 
+        text.sections[0].style.color = Color::rgba(LEVEL_COMPLETE_TEXT_COLOR.0, LEVEL_COMPLETE_TEXT_COLOR.1, LEVEL_COMPLETE_TEXT_COLOR.2, text_info.alpha);
+
+        text.sections[0].value = format!("Level {}", text_info.level);
+
+        if text_info.alpha >= 1.0 { // if alpha is 1.0, stop fading in and start fading out 
+            text_info.fade_in = false;
+            text_info.fade_out = true;
+        }
+    } else if text_info.fade_out {
+        text_info.alpha -= NEW_LEVEL_TEXT_FADE_IN_SPEED; // if currently fading out, decrement alpha until 0.0 
+        text.sections[0].style.color = Color::rgba(LEVEL_COMPLETE_TEXT_COLOR.0, LEVEL_COMPLETE_TEXT_COLOR.1, LEVEL_COMPLETE_TEXT_COLOR.2, text_info.alpha);
+
+        if text_info.alpha <= 0.0 { // if alpha is 0.0, stop fading out and reset text 
+            text_info.fade_out = false;
+            text_info.alpha = 0.0;
+            text.sections[0].value = "".to_string();
+        }
+    }
+}
+
+/// update system for current level text
 fn current_level_text_update(
     mut query: Query<(&mut Text, With<LevelText>)>,
     game_state: Query<&GameState>,
@@ -457,6 +506,7 @@ fn current_level_text_update(
     }
 }
 
+/// update system for operation choice button
 fn operation_state_button_handling(
     mut interaction_query: Query<
         (&Interaction, &mut BackgroundColor, &Children, &mut OperationButton),
@@ -499,6 +549,7 @@ fn operation_state_button_handling(
     }
 }
 
+/// update system for simulating button
 fn simulating_button_system(
     mut interaction_query: Query<
         (&Interaction, &mut BackgroundColor, &Children, &mut SimulatingButton),
@@ -743,5 +794,6 @@ impl Plugin for UiPlugin {
         app.add_system(y_gradient_text_system);
         app.add_system(operation_state_button_handling);
         app.add_system(current_level_text_update);
+        app.add_system(new_level_text_system);
     }
 }

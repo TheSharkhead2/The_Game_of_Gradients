@@ -13,7 +13,7 @@ use constants::{TICK_TIME, VERTICAL_WINDOW_HEIGHT, BACKGROUND_COLOR, PLAYER_SCAL
 
 use gradient_field::{GradientArrowPlugin, Gradient, GradientOperation, GradientOperationState};
 
-use ui::{UiPlugin};
+use ui::{UiPlugin, NewLevelText};
 
 use level::{LevelPlugin};
 

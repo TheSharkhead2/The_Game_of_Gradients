@@ -3,7 +3,7 @@ use bevy::{
     asset::AssetServer,
 };
 
-use crate::{GameState, Player, Simulating, Gradient};
+use crate::{GameState, Player, Simulating, Gradient, NewLevelText};
 
 use crate::constants::{ENDING_LOCATION_ERROR, PORTAL_SCALE};
 
@@ -44,12 +44,14 @@ fn level_update_system(
     mut player: Query<(&Player, &Transform)>,
     mut game_state: Query<&mut GameState>,
     mut simulating_state: ResMut<State<Simulating>>,
-    mut gradient: Query<&mut Gradient>
+    mut gradient: Query<&mut Gradient>,
+    mut new_level_text: Query<&mut NewLevelText>,
 ) {
     let (_, player_transform) = player.single_mut(); // should be exclusively 1 player
 
     let mut game_state = game_state.single_mut();
     let mut gradient = gradient.single_mut();
+    let mut new_level_text = new_level_text.single_mut();
 
     let distance_from_end_x = game_state.level_info[game_state.current_level as usize].end_location.0 - player_transform.translation.x; 
     let distance_from_end_y = game_state.level_info[game_state.current_level as usize].end_location.1 - player_transform.translation.y;
@@ -68,8 +70,18 @@ fn level_update_system(
 
         if game_state.current_level == game_state.level_info.len() as u32 - 1 { // if last level
             game_state.current_level = 0; // reset to first level
+
+            // update new level text to fade in and out with new level 
+            new_level_text.fade_in = true;
+            new_level_text.fade_out = false;
+            new_level_text.level = game_state.current_level + 1;
         } else {
             game_state.current_level += 1; // increment level
+
+            // update new level text to fade in and out with new level 
+            new_level_text.fade_in = true;
+            new_level_text.fade_out = false;
+            new_level_text.level = game_state.current_level + 1;
         }
     }
 }
