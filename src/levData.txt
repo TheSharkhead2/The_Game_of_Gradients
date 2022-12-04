@@ -15,11 +15,12 @@ Level 3:
    Solution:
 
 Level 4:
-   Start Pos:
-   Solution:
+   Start Pos: (0, 0)
+   End Pos: (3, 9)?
+   Solution: [1, x]
 
 Level 5:
-   Start Pos: (x_min, y_min); Make x_min = y_min
+   Start Pos: (-15, 15)
    End Pos: (0, 0)
    Gas0 Pos: (-14, -7.5)
    Gas1 Pos: (-10., 0)
