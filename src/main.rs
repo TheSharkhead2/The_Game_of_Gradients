@@ -54,18 +54,18 @@ impl GameState {
             level_info: vec![
                 Level {
                     level_number: 0, 
-                    start_location: (-15., 15.),
-                    end_location: (0., 0.),
+                    start_location: (-10., 5.),
+                    end_location: (10., 4.5),
                     x_functions: vec![
-                        ("e^x".into(), |x, _y| x.exp()), 
-                        ("300".into(), |_x, _y| 300.),
-                        ("cbrt(x)".into(), |x, _y| x.cbrt()),
+                        ("x^2".into(), |x, _y| x.powf(2.)), 
+                        ("log(y^2)".into(), |_x, y| y.powf(2.).log(10.)),
+                        ("-1".into(), |_x, _y| -1.),
                         ("y".into(), |_x, y| y),
                     ],
                     y_functions: vec![
-                        ("-x^2".into(), |x, _y| -1.*x.powf(2.)), 
-                        ("-1".into(), |_x, _y| -1.),
-                        ("cbrt(y)".into(), |_x, y| y.cbrt()),
+                        ("-1".into(), |_x, _y| -1.), 
+                        ("1/3".into(), |_x, _y| (1./3.)),
+                        ("x".into(), |x, _y| x),
                         ("y".into(), |_x, y| y),
                     ],
                     gas_locations: Vec::new(),
