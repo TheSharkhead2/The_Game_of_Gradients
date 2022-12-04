@@ -57,11 +57,17 @@ Level 8:
 
 
 Level 9:
+<<<<<<< HEAD
    Start Pos: (-10, 0)
    End Pos: (10, 0)
    Gas0 Pos: (0, 10)
    Gas1 Pos: (0, -10)
    Solution: (y, -x) or (-y, x)
+=======
+   Start Pos: (-10,0)
+   End Pos: (10,0)
+   Solution: 
+>>>>>>> af2fe501f3cd570ce50edf05268e792621331c43
 
 Level 10:
    Start Pos:
