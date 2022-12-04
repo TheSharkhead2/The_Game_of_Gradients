@@ -11,7 +11,7 @@ pub const NUM_ARROWS_X: u32 = 11; // number of arrows in x direction
 pub const NUM_ARROWS_Y: u32 = 11; // number of arrows in y direction
 pub const BASE_ARROW_SCALE: f32 = 0.001; // base scaling factor for arrows
 pub const EXPECTED_MAX_ARROW_SCALE: f32 = 10.; // expected maximum scaling factor from BASE_ARROW_SCALE for arrows (Could change to dynamic system based on max arrow size in future)
-pub const ENDING_LOCATION_ERROR: f32 = 0.1; // error allowed for ending location
+pub const ENDING_LOCATION_ERROR: f32 = 0.2; // error allowed for ending location
 
 // button constants
 pub const NORMAL_BUTTON_COLOR: Color = Color::rgb(0.5, 0.5, 0.5);

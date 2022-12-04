@@ -51,17 +51,17 @@ impl GameState {
             level_info: vec![
                 Level {
                     level_number: 0, 
-                    start_location: (-10., 5.),
-                    end_location: (10., 4.5),
+                    start_location: (0., 10.),
+                    end_location: (10., 4.3),
                     x_functions: vec![
                         ("x^2".into(), |x, _y| x.powf(2.)), 
-                        ("log(y^2)".into(), |_x, y| y.powf(2.).log(10.)),
                         ("-1".into(), |_x, _y| -1.),
+                        ("1".into(), |_x, _y| 1.),
                         ("y".into(), |_x, y| y),
                     ],
                     y_functions: vec![
                         ("-1".into(), |_x, _y| -1.), 
-                        ("1/3".into(), |_x, _y| (1./3.)),
+                        ("1/2".into(), |_x, _y| (1./2.)),
                         ("x".into(), |x, _y| x),
                         ("y".into(), |_x, y| y),
                     ],
