@@ -1,13 +1,14 @@
 use bevy::{
     prelude::*,
-    render::camera::ScalingMode
+    render::camera::ScalingMode,
+    asset::AssetServer
 };
 
 mod constants; 
 mod gradient_field;
 mod ui;
 
-use constants::{TICK_TIME, VERTICAL_WINDOW_HEIGHT, BACKGROUND_COLOR};
+use constants::{TICK_TIME, VERTICAL_WINDOW_HEIGHT, BACKGROUND_COLOR, BASE_ARROW_SCALE};
 
 use gradient_field::{GradientArrowPlugin, Gradient, GradientOperation, GradientOperationState};
 
@@ -46,7 +47,7 @@ impl GameState {
             level_info: vec![
                 Level {
                     level_number: 0, 
-                    start_location: (4., 7.),
+                    start_location: (7., -5.),
                     x_functions: vec![
                         ("-x^2".into(), |x, _y| -1.*x.powf(2.)), 
                         ("-3".into(), |_x, _y| -3.),
@@ -89,17 +90,18 @@ fn setup(mut commands: Commands) {
 }
 
 /// Create player 
-fn spawn_player(mut commands: Commands) {
-    commands.spawn(SpriteBundle {
-        sprite: Sprite {
-            color: Color::rgb(0.9, 0.9, 0.9),
-            custom_size: Some(Vec2::new(1., 1.)),
-            ..default()
-        },
-        transform: Transform::from_xyz(5., 0., 0.), // set position of player
-        ..default()
-    })
-    .insert(Player);
+fn spawn_player(mut commands: Commands, asset_server: Res<AssetServer>) {
+    commands
+        .spawn(SpriteBundle {
+            texture: asset_server.load("../assets/pixil-frame-0 (1).png"),        
+            transform: Transform::from_xyz(0., 0., 0.) // set initial position to (0,0)
+                    .with_scale(Vec3::new(100.*BASE_ARROW_SCALE, 100.*BASE_ARROW_SCALE, 1.)) // with no scaling 
+                    .with_rotation(Quat::from_rotation_z(0.)), // with no rotation
+                ..default()
+            
+        })
+        .insert(Player);
+        
 }
 
 
