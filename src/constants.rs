@@ -5,7 +5,8 @@ pub const PORTAL_SCALE: f32 = 0.1;
 
 pub const BACKGROUND_COLOR: Color = Color::rgb(0.19, 0.19, 0.19);
 
-pub const TICK_TIME: f32 = 0.01; // "time" for velocity jumps per tick. controls speed of player
+pub const FIELD_SCALE: f32 = 10.; // scalar value to increase field strength by **CHANGE THIS INSTEAD OF TICK TIME**
+pub const TICK_TIME: f32 = 0.0001; // "time" for velocity jumps per tick. controls speed of player
 pub const VERTICAL_WINDOW_HEIGHT: f32 = 40.; // world units for height of window
 pub const NUM_ARROWS_X: u32 = 11; // number of arrows in x direction
 pub const NUM_ARROWS_Y: u32 = 11; // number of arrows in y direction
@@ -29,3 +30,6 @@ pub const SIM_BUTTON_OFF: Color = Color::rgb(0.1, 0.8, 0.1); // color for simula
 pub const SIM_BUTTON_ON: Color = Color::rgb(0.8, 0.1, 0.1); // color for simulate button when simulating
 pub const SIM_BUTTON_OFF_HOVER: Color = Color::rgb(0.2, 0.9, 0.2); // color for simulate button when not simulating and hovered
 pub const SIM_BUTTON_ON_HOVER: Color = Color::rgb(0.9, 0.2, 0.2); // color for simulate button when simulating and hovered
+
+pub const NEW_LEVEL_TEXT_FADE_IN_SPEED: f32 = 0.03; // speed at which new level text fades in
+pub const LEVEL_COMPLETE_TEXT_COLOR: (f32, f32, f32) = (0.4, 0.8, 0.4); // rgb values for level complete text
