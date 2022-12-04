@@ -2,6 +2,7 @@ use bevy::prelude::Color;
 
 pub const PLAYER_SCALE: f32 = 0.05;
 pub const PORTAL_SCALE: f32 = 0.1;
+pub const GAS_CAN_SCALE: f32 = 0.05;
 
 pub const BACKGROUND_COLOR: Color = Color::rgb(0.19, 0.19, 0.19);
 
@@ -33,3 +34,5 @@ pub const SIM_BUTTON_ON_HOVER: Color = Color::rgb(0.9, 0.2, 0.2); // color for s
 
 pub const NEW_LEVEL_TEXT_FADE_IN_SPEED: f32 = 0.03; // speed at which new level text fades in
 pub const LEVEL_COMPLETE_TEXT_COLOR: (f32, f32, f32) = (0.4, 0.8, 0.4); // rgb values for level complete text
+
+pub const MAX_GAS_CANS: u32 = 5; // maximum number of gas cans that can be collected

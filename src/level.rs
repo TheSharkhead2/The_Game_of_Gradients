@@ -5,11 +5,18 @@ use bevy::{
 
 use crate::{GameState, Player, Simulating, Gradient, NewLevelText};
 
-use crate::constants::{ENDING_LOCATION_ERROR, PORTAL_SCALE};
+use crate::constants::{ENDING_LOCATION_ERROR, PORTAL_SCALE, MAX_GAS_CANS, GAS_CAN_SCALE};
 
 #[derive(Component)]
 /// struct to label ending location sprite 
 pub struct EndingLocation;
+
+#[derive(Component)]
+/// Struct to label gas can 
+pub struct GasCan {
+    pub collected: bool, // whether gas can has been collected
+    pub index: u32, // specific index of this gas can 
+}
 
 /// load ending location sprite and place in world 
 fn ending_location_setup(
@@ -58,7 +65,7 @@ fn level_update_system(
 
     let distance_from_end = (distance_from_end_x.powi(2) + distance_from_end_y.powi(2)).sqrt();
 
-    if distance_from_end < ENDING_LOCATION_ERROR { // if within allowable error from end 
+    if full_gas(&game_state) && distance_from_end < ENDING_LOCATION_ERROR { // if within allowable error from end and collected all the gas
         match simulating_state.current() { // stop simulating on level end
             Simulating::NotSimulating => {},
             Simulating::Simulating => {
@@ -86,6 +93,103 @@ fn level_update_system(
     }
 }
 
+/// initialize gas sprites into world and they start invisible 
+pub fn gas_setup(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+) {
+    for i in 0..MAX_GAS_CANS {
+        commands
+            .spawn(SpriteBundle {
+                texture: asset_server.load("../assets/gas_can.png"),
+                transform: Transform::from_xyz(0., 0., 0.)
+                    .with_scale(Vec3::splat(GAS_CAN_SCALE)),
+                visibility: Visibility {
+                    is_visible: false, // starts invisible
+                },
+                ..default()
+            })
+            .insert(GasCan {collected: false, index: i});
+    }
+}
+
+/// update gas sprite positions based on current level 
+pub fn gas_update(
+    mut query: Query<(&mut Transform, &mut Visibility, &mut GasCan)>,
+    player: Query<&Player>,
+    mut game_state: Query<&mut GameState>,
+    simulating_state: Res<State<Simulating>>
+) {
+    let mut game_state = game_state.single_mut(); // get game state
+    let player = player.single(); // get player
+
+    if game_state.gas_collected.len() != game_state.level_info[game_state.current_level as usize].gas_locations.len() { // if gas collected is not the same length as gas locations
+        game_state.gas_collected = vec![0; game_state.level_info[game_state.current_level as usize].gas_locations.len()]; // reset gas collected
+    }
+
+    match simulating_state.current() {
+        Simulating::NotSimulating => {
+            for (mut transform, mut visibility, mut gas_can) in query.iter_mut() {
+                if gas_can.index < game_state.level_info[game_state.current_level as usize].gas_locations.len() as u32 { // if gas can is in current level
+                    let gas_can_position = game_state.level_info[game_state.current_level as usize].gas_locations[gas_can.index as usize]; // get gas can position
+
+                    transform.translation.x = gas_can_position.0 as f32; // set gas can position
+                    transform.translation.y = gas_can_position.1 as f32;
+
+                    visibility.is_visible = true; // make gas can visibile when not simulating
+                    gas_can.collected = false; // reset gas can collected state
+                    game_state.gas_collected[gas_can.index as usize] = 0; // reset gas can collected state
+                } else {
+                    visibility.is_visible = false; // make gas can invisible
+                    gas_can.collected = false; // reset gas can collected state (just in case)
+                }
+            }
+        },
+        Simulating::Simulating => {
+            for (mut transform, mut visibility, mut gas_can) in query.iter_mut() {
+                if gas_can.index < game_state.level_info[game_state.current_level as usize].gas_locations.len() as u32 { // if gas can is in current level
+                    let gas_can_position = game_state.level_info[game_state.current_level as usize].gas_locations[gas_can.index as usize]; // get gas can position
+
+                    transform.translation.x = gas_can_position.0 as f32; // set gas can position
+                    transform.translation.y = gas_can_position.1 as f32;
+
+                    let distance_from_player_x = gas_can_position.0 as f32 - player.x; // get distance from player
+                    let distance_from_player_y = gas_can_position.1 as f32 - player.y;
+
+                    let distance_from_player = (distance_from_player_x.powi(2) + distance_from_player_y.powi(2)).sqrt();
+
+                    if distance_from_player < ENDING_LOCATION_ERROR {
+                        gas_can.collected = true; // set gas can collected state 
+
+                        game_state.gas_collected[gas_can.index as usize] = 1; // set gas can collected state in game state
+
+                    }
+
+                    if gas_can.collected {
+                        visibility.is_visible = false; // make gas can invisible when collected
+                    } else {
+                        visibility.is_visible = true; // make gas can visible when not collected
+                    }
+
+                } else {
+                    visibility.is_visible = false; // make gas can invisible
+                }
+            }
+        },
+    }
+}
+
+/// internal function for whether or not the player has collected all the gas 
+pub fn full_gas(
+    game_state: &GameState, // raw game state 
+) -> bool {
+    if game_state.gas_collected.iter().sum::<u32>() == game_state.level_info[game_state.current_level as usize].gas_locations.len() as u32 { // if all gas was collected 
+        return true
+    } else {
+        return false
+    }
+}
+
 /// Plugin for controlling level logic 
 pub struct LevelPlugin;
 
@@ -94,5 +198,7 @@ impl Plugin for LevelPlugin {
         app.add_system(level_update_system);
         app.add_startup_system(ending_location_setup);
         app.add_system(ending_location_update);
+        app.add_startup_system(gas_setup);
+        app.add_system(gas_update);
     }
 }
