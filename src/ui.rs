@@ -60,6 +60,10 @@ pub struct XGradientText;
 pub struct YGradientText;
 
 #[derive(Component)]
+/// Struct to label text of current level 
+pub struct LevelText;
+
+#[derive(Component)]
 pub struct OperationButton {
     pub operation: GradientOperation,
 }
@@ -127,42 +131,40 @@ fn ui_setup(
                                 .insert(SimulatingButton::new()); // add button
                         });
 
-                    // place button to toggle addition/multiplication
-                    parent
+                    parent 
                         .spawn(NodeBundle {
                             style: Style {
-                                size: Size::new(Val::Px(BUTTON_WIDTH + 2.*BUTTON_SPACING), Val::Px(BUTTON_HEIGHT+2.*BUTTON_SPACING)),
-                                justify_content: JustifyContent::Center,
-                                align_items: AlignItems::Center,
+                                size: Size::new(Val::Percent(50.), Val::Px(BUTTON_HEIGHT + 2.*BUTTON_SPACING)),
+                                justify_content: JustifyContent::FlexEnd,
+                                align_items: AlignItems::FlexStart,
                                 ..default()
                             },
                             ..default()
                         })
                         .with_children(|parent| {
                             parent 
-                                .spawn(ButtonBundle {
+                                .spawn(NodeBundle {
                                     style: Style {
-                                        size: Size::new(Val::Px(BUTTON_WIDTH), Val::Px(BUTTON_HEIGHT)),
+                                        size: Size::new(Val::Percent(20.), Val::Percent(100.)),
                                         justify_content: JustifyContent::Center,
                                         align_items: AlignItems::Center,
                                         ..default()
                                     },
-                                    background_color: NORMAL_BUTTON_COLOR.into(),
                                     ..default()
                                 })
                                 .with_children(|parent| {
-                                    parent.spawn(TextBundle::from_section(
-                                        "Add",
-                                        TextStyle {
-                                            font: asset_server.load("../assets/fonts/tahoma.ttf"),
-                                            font_size: 20.0,
-                                            color: Color::rgb(0.9, 0.9, 0.9),
-                                        },
-                                    ));
-                                })
-                                .insert(OperationButton {
-                                    operation: GradientOperation::new(), // default starting
+                                    parent 
+                                        .spawn(TextBundle::from_section(
+                                            "Level: ",
+                                            TextStyle {
+                                                font: asset_server.load("../assets/fonts/tahoma.ttf"),
+                                                font_size: 20.0, 
+                                                color: Color::rgb(0.9, 0.9, 0.9),
+                                            },
+                                        ))
+                                        .insert(LevelText);
                                 });
+                                
                         });
                 });
 
@@ -183,8 +185,8 @@ fn ui_setup(
                         .spawn(NodeBundle {
                             style: Style {
                                 size: Size::new(Val::Percent(50.), Val::Px(2. * BUTTON_HEIGHT + 3. * BUTTON_SPACING)), // size of button set
-                                flex_direction: FlexDirection::Column, // stack button sets in column
-                                justify_content: JustifyContent::Center, // align to center of height 
+                                flex_direction: FlexDirection::Row, // stack button sets in column
+                                justify_content: JustifyContent::SpaceBetween, // align to center of height 
                                 align_items: AlignItems::Center, // align to right
                                 ..default()
                             },
@@ -192,54 +194,119 @@ fn ui_setup(
                         })
                         .with_children(|parent| {
                             parent 
-                                .spawn( NodeBundle {
+                                .spawn(NodeBundle {
                                     style: Style {
-                                        size: Size::new(Val::Percent(100.), Val::Px(BUTTON_HEIGHT)), // size of button
-                                        justify_content: JustifyContent::Center,
-                                        align_content: AlignContent::Center,
-                                        align_items: AlignItems::Center,
-                                        ..default()
-                                    },
-                                    ..default()
-                                })
-                                .with_children(|parent| {
-                                    parent
-                                        .spawn(TextBundle::from_section(
-                                                "x = ",
-                                                TextStyle {
-                                                    font: asset_server.load("../assets/fonts/tahoma.ttf"),
-                                                    font_size: 30.,
-                                                    color: Color::rgb(0.9, 0.9, 0.9)
-                                                }
-                                        ))
-                                        .insert(XGradientText); // insert label that this is for the x component of the gradient 
-                                });
-                            
-                            parent 
-                                .spawn( NodeBundle {
-                                    style: Style {
-                                        size: Size::new(Val::Percent(100.), Val::Px(BUTTON_HEIGHT)), // size of button
-                                        justify_content: JustifyContent::Center,
-                                        align_content: AlignContent::Center,
-                                        align_items: AlignItems::Center,
+                                        size: Size::new(Val::Percent(75.), Val::Percent(100.)),
+                                        flex_direction: FlexDirection::Column, // stack button sets in column
+                                        justify_content: JustifyContent::Center, // align to center of height 
+                                        align_items: AlignItems::Center, // align to right
                                         ..default()
                                     },
                                     ..default()
                                 })
                                 .with_children(|parent| {
                                     parent 
-                                    .spawn(TextBundle::from_section(
-                                            "y = ",
-                                            TextStyle {
-                                                font: asset_server.load("../assets/fonts/tahoma.ttf"),
-                                                font_size: 30.,
-                                                color: Color::rgb(0.9, 0.9, 0.9)
-                                            }
-                                    ))
-                                    .insert(YGradientText); // insert label that this is for the y component of the gradient
+                                        .spawn( NodeBundle {
+                                            style: Style {
+                                                size: Size::new(Val::Percent(100.), Val::Px(BUTTON_HEIGHT)), // size of button
+                                                justify_content: JustifyContent::Center,
+                                                align_content: AlignContent::Center,
+                                                align_items: AlignItems::Center,
+                                                ..default()
+                                            },
+                                            ..default()
+                                        })
+                                        .with_children(|parent| {
+                                            parent
+                                                .spawn(TextBundle::from_section(
+                                                        "x = ",
+                                                        TextStyle {
+                                                            font: asset_server.load("../assets/fonts/tahoma.ttf"),
+                                                            font_size: 30.,
+                                                            color: Color::rgb(0.9, 0.9, 0.9)
+                                                        }
+                                                ))
+                                                .insert(XGradientText); // insert label that this is for the x component of the gradient 
+                                        });
+                                    
+                                    parent 
+                                        .spawn( NodeBundle {
+                                            style: Style {
+                                                size: Size::new(Val::Percent(100.), Val::Px(BUTTON_HEIGHT)), // size of button
+                                                justify_content: JustifyContent::Center,
+                                                align_content: AlignContent::Center,
+                                                align_items: AlignItems::Center,
+                                                ..default()
+                                            },
+                                            ..default()
+                                        })
+                                        .with_children(|parent| {
+                                            parent 
+                                            .spawn(TextBundle::from_section(
+                                                    "y = ",
+                                                    TextStyle {
+                                                        font: asset_server.load("../assets/fonts/tahoma.ttf"),
+                                                        font_size: 30.,
+                                                        color: Color::rgb(0.9, 0.9, 0.9)
+                                                    }
+                                            ))
+                                            .insert(YGradientText); // insert label that this is for the y component of the gradient
+                                        });
+                                    
                                 });
-                            
+
+                            parent 
+                                .spawn(NodeBundle {
+                                    style: Style {
+                                        size: Size::new(Val::Percent(25.), Val::Percent(100.)),
+                                        justify_content: JustifyContent::Center,
+                                        align_content: AlignContent::Center,
+                                        align_items: AlignItems::Center,
+                                        ..default()
+                                    },
+                                    ..default()
+                                })
+                                .with_children(|parent| {
+                                    // place button to toggle addition/multiplication
+                                    parent
+                                    .spawn(NodeBundle {
+                                        style: Style {
+                                            size: Size::new(Val::Px(BUTTON_WIDTH + 2.*BUTTON_SPACING), Val::Px(BUTTON_HEIGHT+2.*BUTTON_SPACING)),
+                                            justify_content: JustifyContent::Center,
+                                            align_items: AlignItems::Center,
+                                            ..default()
+                                        },
+                                        ..default()
+                                    })
+                                    .with_children(|parent| {
+                                        parent 
+                                            .spawn(ButtonBundle {
+                                                style: Style {
+                                                    size: Size::new(Val::Px(BUTTON_WIDTH), Val::Px(BUTTON_HEIGHT)),
+                                                    justify_content: JustifyContent::Center,
+                                                    align_items: AlignItems::Center,
+                                                    ..default()
+                                                },
+                                                background_color: NORMAL_BUTTON_COLOR.into(),
+                                                ..default()
+                                            })
+                                            .with_children(|parent| {
+                                                parent.spawn(TextBundle::from_section(
+                                                    "Add",
+                                                    TextStyle {
+                                                        font: asset_server.load("../assets/fonts/tahoma.ttf"),
+                                                        font_size: 20.0,
+                                                        color: Color::rgb(0.9, 0.9, 0.9),
+                                                    },
+                                                ));
+                                            })
+                                            .insert(OperationButton {
+                                                operation: GradientOperation::new(), // default starting
+                                            });
+                                    });
+                                });
                         });
+                        
         
                     parent
                         // button rows
@@ -347,6 +414,17 @@ fn ui_setup(
                         });
                 });
         });
+}
+
+fn current_level_text_update(
+    mut query: Query<(&mut Text, With<LevelText>)>,
+    game_state: Query<&GameState>,
+) {
+    let game_state = game_state.single();
+
+    for (mut text, _) in query.iter_mut() {
+        text.sections[0].value = format!("Level: {}", game_state.current_level+1);
+    }
 }
 
 fn operation_state_button_handling(
@@ -634,5 +712,6 @@ impl Plugin for UiPlugin {
         app.add_system(x_gradient_text_system);
         app.add_system(y_gradient_text_system);
         app.add_system(operation_state_button_handling);
+        app.add_system(current_level_text_update);
     }
 }
