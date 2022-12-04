@@ -3,7 +3,7 @@ use bevy::{
     asset::AssetServer,
 };
 
-use crate::{GameState, Player};
+use crate::{GameState, Player, Simulating};
 
 use crate::constants::{ENDING_LOCATION_ERROR, PORTAL_SCALE};
 
@@ -43,6 +43,7 @@ fn ending_location_update(
 fn level_update_system(
     mut player: Query<(&Player, &Transform)>,
     mut game_state: Query<&mut GameState>,
+    mut simulating_state: ResMut<State<Simulating>>,
 ) {
     let (_, player_transform) = player.single_mut(); // should be exclusively 1 player
 
@@ -54,6 +55,13 @@ fn level_update_system(
     let distance_from_end = (distance_from_end_x.powi(2) + distance_from_end_y.powi(2)).sqrt();
 
     if distance_from_end < ENDING_LOCATION_ERROR { // if within allowable error from end 
+        match simulating_state.current() { // stop simulating on level end
+            Simulating::NotSimulating => {},
+            Simulating::Simulating => {
+                simulating_state.set(Simulating::NotSimulating).unwrap(); // stop simulating 
+            },
+        }
+
         if game_state.current_level == game_state.level_info.len() as u32 - 1 { // if last level
             game_state.current_level = 0; // reset to first level
         } else {
