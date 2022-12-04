@@ -1,3 +1,5 @@
+use std::f32::consts::PI;
+
 use bevy::{
     prelude::*,
     render::camera::ScalingMode,
@@ -121,6 +123,10 @@ fn player_movement(mut player: Query<(&Player, &mut Transform)>, gradient: Query
             for (_, mut transform) in player.iter_mut() {
                 transform.translation.x += TICK_TIME * gradient.x(transform.translation.x, transform.translation.y);
                 transform.translation.y += TICK_TIME * gradient.y(transform.translation.x, transform.translation.y);
+
+                // update player angle 
+                let angle = gradient.y(transform.translation.x, transform.translation.y).atan2(gradient.x(transform.translation.x, transform.translation.y)) - PI/2.;
+                transform.rotation = Quat::from_rotation_z(angle);
             }
         }, 
         Simulating::NotSimulating => { // set player to start location when not simulating
