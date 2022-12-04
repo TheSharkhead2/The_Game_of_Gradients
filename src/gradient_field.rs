@@ -212,14 +212,14 @@ fn update_gradient_arrows(
     }
 
     for (mut gradient_arrow, mut sprite, mut transform) in gradient_arrows.iter_mut() {
-        gradient_arrow.scale = (EXPECTED_MAX_ARROW_SCALE*BASE_ARROW_SCALE)*(1./(max_magnitude*0.6) * gradient_arrow.scale).powf(0.33);
+        let scale = (EXPECTED_MAX_ARROW_SCALE*BASE_ARROW_SCALE)*(gradient_arrow.scale/(0.6*max_magnitude)).powf(1./7.);
 
         gradient_arrow.angle = gradient.y(gradient_arrow.x, gradient_arrow.y).atan2(gradient.x(gradient_arrow.x, gradient_arrow.y)) - 0.25*PI; // get the angle of the arrow
 
-        sprite.color = Color::hsla(gradient_arrow.scale/(BASE_ARROW_SCALE*EXPECTED_MAX_ARROW_SCALE)*360., 1., 0.8, 1.);
+        sprite.color = Color::hsla(240. - gradient_arrow.scale/(max_magnitude)*240., 1., 0.8, 1.);
 
         *transform = Transform::from_xyz(gradient_arrow.x, gradient_arrow.y, 0.) // set position to (x,y)
-            .with_scale(Vec3::new(gradient_arrow.scale, gradient_arrow.scale, gradient_arrow.scale)) // edit scaling
+            .with_scale(Vec3::new(scale, scale, gradient_arrow.scale)) // edit scaling
             .with_rotation(Quat::from_rotation_z(gradient_arrow.angle)); // edit rotation
 
     }
