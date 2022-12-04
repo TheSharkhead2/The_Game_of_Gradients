@@ -19,6 +19,7 @@ use ui::{UiPlugin};
 pub struct Level {
     pub level_number: u32, // level number
     pub start_location: (f32, f32), // starting location
+    pub end_location: (f32, f32), // ending location
     pub x_functions: Vec<(String, fn(f32, f32) -> f32)>, // functions available for x dimension (String representation of function, function itself)
     pub y_functions: Vec<(String, fn(f32, f32) -> f32)>, // functions available for y dimension (String representation of function, function itself)
 }
@@ -47,7 +48,8 @@ impl GameState {
             level_info: vec![
                 Level {
                     level_number: 0, 
-                    start_location: (4., 7.),
+                    start_location: (-5., 0.),
+                    end_location: (5., 0.),
                     x_functions: vec![
                         ("x^2".into(), |x, _y| x.powf(2.)), 
                         ("3".into(), |_x, _y| 3.),
