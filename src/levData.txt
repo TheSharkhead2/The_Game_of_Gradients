@@ -50,10 +50,10 @@ Level 7:
 Level 8:
    Start Pos: (-10, 5)
    End Pos: (10, 4.3)
-   Gas0 Pos: (0, 12)? (May have to be adjusted)
+   Gas0 Pos: (0, 15)? (May have to be adjusted)
    Solution: [x^2 + 1, -xy/2]
    Extra Modifications:
-      ENDING_LOCATION_ERROR: f32 = 0.2
+      ENDING_LOCATION_ERROR: f32 = 0.5
 
 
 Level 9:
