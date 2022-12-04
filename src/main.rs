@@ -59,6 +59,7 @@ impl GameState {
         GameState {
             level_info: vec![
                 Level {
+                    // Linear Function
                     level_number: 0, 
                     start_location: (-15., -15.),
                     end_location: (0., 0.),
@@ -75,10 +76,11 @@ impl GameState {
                         ("-1".into(), |_x, _y| -1.),
                         ],
                     gas_locations: Vec::new(),
-                    tick_time: 0.01
+                    tick_time: 0.03,
                 },
                 Level {
-                    level_number: 1, 
+                    // Parabola Level
+                    level_number: 3, 
                     start_location: (0., 0.),
                     end_location: (3., 9.),
                     x_functions: vec![
@@ -94,7 +96,54 @@ impl GameState {
                         ("-1".into(), |_x, _y| -1.),
                         ],
                     gas_locations: Vec::new(),
-                    tick_time: 0.01
+                    tick_time: 0.01,
+                },
+                Level {
+                    // Spiral Level
+                    level_number: 4, 
+                    start_location: (-15., -15.),
+                    end_location: (0., 0.),
+                    x_functions: vec![
+                        ("x".into(), |x, _y| x), 
+                        ("y".into(), |_x, y| y),
+                        ("1".into(), |_x, _y| 1.),
+                        ("-1".into(), |_x, _y| -1.),
+                    ],
+                    y_functions: vec![
+                        ("x".into(), |x, _y| x), 
+                        ("y".into(), |_x, y| y),
+                        ("1".into(), |_x, _y| 1.),
+                        ("-1".into(), |_x, _y| -1.),
+                        ],
+                    gas_locations: vec![
+                        (-14., -7.5),
+                        (-10., 0.),
+                        (0., 2.1),
+                    ],
+                    tick_time: 0.001,
+                },
+                Level {
+                    // Circle Function
+                    level_number: 8, 
+                    start_location: (-10., 0.),
+                    end_location: (10., 0.),
+                    x_functions: vec![
+                        ("x".into(), |x, _y| x), 
+                        ("y".into(), |_x, y| y),
+                        ("1".into(), |_x, _y| 1.),
+                        ("-1".into(), |_x, _y| -1.),
+                    ],
+                    y_functions: vec![
+                        ("x".into(), |x, _y| x), 
+                        ("y".into(), |_x, y| y),
+                        ("1".into(), |_x, _y| 1.),
+                        ("-1".into(), |_x, _y| -1.),
+                        ],
+                    gas_locations: vec![
+                        (0., 10.),
+                        (0., -10.),
+                    ],
+                    tick_time: 0.001,
                 },
             ],
             current_level: 0,

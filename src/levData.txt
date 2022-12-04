@@ -24,7 +24,7 @@ Level 4:
    Solution: [1, x]
 
 Level 5:
-   Start Pos: (-15, 15)
+   Start Pos: (-15, -15)
    End Pos: (0, 0)
    Gas0 Pos: (-14, -7.5)
    Gas1 Pos: (-10., 0)
@@ -56,9 +56,11 @@ Level 8:
 
 
 Level 9:
-   Start Pos:
-   End Pos:
-   Solution:
+   Start Pos: (-10, 0)
+   End Pos: (10, 0)
+   Gas0 Pos: (0, 10)
+   Gas1 Pos: (0, -10)
+   Solution: (y, -x) or (-y, x)
 
 Level 10:
    Start Pos:
