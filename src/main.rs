@@ -32,9 +32,10 @@ pub struct Level {
 
 #[derive(Component, Clone, Debug)]
 /// Game state. Stores relevant information about the game
-struct GameState {
+pub struct GameState {
     pub level_info: Vec<Level>, // essentially a constant that includes all information about levels for the game
     pub current_level: u32, // current level number
+    pub gas_collected: Vec<u32>, // number of gas stops collected as a one-hot encoded vector
 }
 
 #[derive(Clone, Debug, Hash, PartialEq, Eq,)]
@@ -45,7 +46,10 @@ pub enum Simulating {
 }
 
 #[derive(Component)]
-struct Player;
+pub struct Player {
+    pub x: f32, // x position of player
+    pub y: f32, // y position of player
+}
 
 impl GameState {
     /// Initialize new player with basic level info 
@@ -68,10 +72,11 @@ impl GameState {
                         ("y".into(), |_x, y| y),
                         ("cos(x)".into(), |x, _y| x.cos()),
                     ],
-                    gas_locations: Vec::new(),
+                    gas_locations: vec![(1., 0.)],
                 }
             ],
             current_level: 0,
+            gas_collected: vec![0],
         }
     }
 }
@@ -110,21 +115,25 @@ fn spawn_player(mut commands: Commands, asset_server: Res<AssetServer>) {
                 ..default()
             
         })
-        .insert(Player);
+        .insert(Player {x: 0., y: 0.}); // insert player component
         
 }
 
 
 /// move player 
-fn player_movement(mut player: Query<(&Player, &mut Transform)>, gradient: Query<&Gradient>, simulating_state: Res<State<Simulating>>, game_state: Query<&GameState>) {
+fn player_movement(mut player: Query<(&mut Player, &mut Transform)>, gradient: Query<&Gradient>, simulating_state: Res<State<Simulating>>, game_state: Query<&GameState>) {
     let gradient = gradient.single(); // should be exclusively 1 gradient
     let game_state = game_state.single(); // should be exclusively 1 game state
  
     match simulating_state.current() {
         Simulating::Simulating => { // move player on if currently simulating 
-            for (_, mut transform) in player.iter_mut() {
+            for (mut player_struct, mut transform) in player.iter_mut() {
                 transform.translation.x += TICK_TIME * gradient.x(transform.translation.x, transform.translation.y);
                 transform.translation.y += TICK_TIME * gradient.y(transform.translation.x, transform.translation.y);
+
+                // update player struct coords
+                player_struct.x = transform.translation.x;
+                player_struct.y = transform.translation.y;
 
                 // update player angle 
                 let angle = gradient.y(transform.translation.x, transform.translation.y).atan2(gradient.x(transform.translation.x, transform.translation.y)) - PI/2.;
@@ -132,9 +141,13 @@ fn player_movement(mut player: Query<(&Player, &mut Transform)>, gradient: Query
             }
         }, 
         Simulating::NotSimulating => { // set player to start location when not simulating
-            for (_, mut transform) in player.iter_mut() {
+            for (mut player_struct, mut transform) in player.iter_mut() {
                 transform.translation.x = game_state.level_info[game_state.current_level as usize].start_location.0 as f32;
                 transform.translation.y = game_state.level_info[game_state.current_level as usize].start_location.1 as f32;
+
+                // update player struct coords 
+                player_struct.x = transform.translation.x;
+                player_struct.y = transform.translation.y;
             }
         },
     } 
