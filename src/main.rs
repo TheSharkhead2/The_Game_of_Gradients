@@ -27,6 +27,7 @@ pub struct Level {
     pub end_location: (f32, f32), // ending location
     pub x_functions: Vec<(String, fn(f32, f32) -> f32)>, // functions available for x dimension (String representation of function, function itself)
     pub y_functions: Vec<(String, fn(f32, f32) -> f32)>, // functions available for y dimension (String representation of function, function itself)
+    pub gas_locations: Vec<(f32, f32)>, // locations of gas stops
 }
 
 #[derive(Component, Clone, Debug)]
@@ -67,6 +68,7 @@ impl GameState {
                         ("y".into(), |_x, y| y),
                         ("cos(x)".into(), |x, _y| x.cos()),
                     ],
+                    gas_locations: Vec::new(),
                 }
             ],
             current_level: 0,
