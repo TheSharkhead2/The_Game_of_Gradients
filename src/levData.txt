@@ -35,14 +35,16 @@ Level 5:
       TICK_TIME: f32 = 0.01
 
 Level 6:
-   Start Pos:
-   End Pos:
-   Solution:
+   Start Pos: (-15,15)
+   End Pos: (0,15)
+   Solution: x = cbrt(x) + 300
+             y = (-x^2) * cbrt(y)
 
 Level 7:
-   Start Pos:
-   End Pos:
-   Solution:
+   Start Pos: (-15,15)
+   End Pos:   (-15,-15)
+   Solution: x = 300y
+             y = -x^2
 
 Level 8:
    Start Pos:
