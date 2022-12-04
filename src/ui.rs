@@ -60,6 +60,10 @@ pub struct XGradientText;
 pub struct YGradientText;
 
 #[derive(Component)]
+/// Struct to label text of current level 
+pub struct LevelText;
+
+#[derive(Component)]
 pub struct OperationButton {
     pub operation: GradientOperation,
 }
@@ -127,7 +131,41 @@ fn ui_setup(
                                 .insert(SimulatingButton::new()); // add button
                         });
 
-                    
+                    parent 
+                        .spawn(NodeBundle {
+                            style: Style {
+                                size: Size::new(Val::Percent(50.), Val::Px(BUTTON_HEIGHT + 2.*BUTTON_SPACING)),
+                                justify_content: JustifyContent::FlexEnd,
+                                align_items: AlignItems::FlexStart,
+                                ..default()
+                            },
+                            ..default()
+                        })
+                        .with_children(|parent| {
+                            parent 
+                                .spawn(NodeBundle {
+                                    style: Style {
+                                        size: Size::new(Val::Percent(20.), Val::Percent(100.)),
+                                        justify_content: JustifyContent::Center,
+                                        align_items: AlignItems::Center,
+                                        ..default()
+                                    },
+                                    ..default()
+                                })
+                                .with_children(|parent| {
+                                    parent 
+                                        .spawn(TextBundle::from_section(
+                                            "Level: ",
+                                            TextStyle {
+                                                font: asset_server.load("../assets/fonts/tahoma.ttf"),
+                                                font_size: 20.0, 
+                                                color: Color::rgb(0.9, 0.9, 0.9),
+                                            },
+                                        ))
+                                        .insert(LevelText);
+                                });
+                                
+                        });
                 });
 
             parent
@@ -376,6 +414,17 @@ fn ui_setup(
                         });
                 });
         });
+}
+
+fn current_level_text_update(
+    mut query: Query<(&mut Text, With<LevelText>)>,
+    game_state: Query<&GameState>,
+) {
+    let game_state = game_state.single();
+
+    for (mut text, _) in query.iter_mut() {
+        text.sections[0].value = format!("Level: {}", game_state.current_level+1);
+    }
 }
 
 fn operation_state_button_handling(
@@ -663,5 +712,6 @@ impl Plugin for UiPlugin {
         app.add_system(x_gradient_text_system);
         app.add_system(y_gradient_text_system);
         app.add_system(operation_state_button_handling);
+        app.add_system(current_level_text_update);
     }
 }
