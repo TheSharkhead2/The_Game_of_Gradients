@@ -1,0 +1,44 @@
+Level 1:
+   Start Pos: (x_min, y_min) # Make x_min = y_min
+   End Pos: (0,0)
+   Solution: ▽f(x, y) = [x, y]
+
+Level 2:
+   Start Pos:
+   Solution:
+
+Level 3:
+   Start Pos:
+   Solution:
+
+Level 4:
+   Start Pos:
+   Solution:
+
+Level 5:
+   Start Pos: (x_min, y_min); Make x_min = y_min
+   End Pos: (0, 0)
+   Gas1 Pos: 
+   Gas2 Pos:
+   Gas3 Pos:
+   Solution: ▽f(x, y) = [y - x, -1 * (x + y)]
+
+Level 6:
+   Start Pos:
+   Solution:
+
+Level 7:
+   Start Pos:
+   Solution:
+
+Level 8:
+   Start Pos:
+   Solution:
+
+Level 9:
+   Start Pos:
+   Solution:
+
+Level 10:
+   Start Pos:
+   Solution:
