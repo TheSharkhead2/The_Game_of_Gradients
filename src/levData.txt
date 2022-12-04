@@ -7,12 +7,16 @@ Level 1:
       TICK_TIME: f32 = 0.01
 
 Level 2:
-   Start Pos:
-   Solution:
+   Start Pos: (5,-5)
+   End Pos: (0, 9)
+   Solution: y = cosx
+             x = -3(x/2)
 
 Level 3:
-   Start Pos:
-   Solution:
+   Start Pos: (-11.7,-14.8)
+   End Pos: (14,12)
+   Solution: y = x^2
+             x = y^2
 
 Level 4:
    Start Pos: (0, 0)
@@ -32,20 +36,25 @@ Level 5:
 
 Level 6:
    Start Pos:
+   End Pos:
    Solution:
 
 Level 7:
    Start Pos:
+   End Pos:
    Solution:
 
 Level 8:
    Start Pos:
+   End Pos:
    Solution:
 
 Level 9:
    Start Pos:
+   End Pos:
    Solution:
 
 Level 10:
    Start Pos:
+   End Pos:
    Solution:
