@@ -5,8 +5,8 @@ pub const PORTAL_SCALE: f32 = 0.1;
 
 pub const BACKGROUND_COLOR: Color = Color::rgb(0.19, 0.19, 0.19);
 
-pub const TICK_TIME: f32 = 0.001; // "time" for velocity jumps per tick. controls speed of player
-pub const VERTICAL_WINDOW_HEIGHT: f32 = 20.; // world units for height of window
+pub const TICK_TIME: f32 = 0.01; // "time" for velocity jumps per tick. controls speed of player
+pub const VERTICAL_WINDOW_HEIGHT: f32 = 40.; // world units for height of window
 pub const NUM_ARROWS_X: u32 = 11; // number of arrows in x direction
 pub const NUM_ARROWS_Y: u32 = 11; // number of arrows in y direction
 pub const BASE_ARROW_SCALE: f32 = 0.001; // base scaling factor for arrows
