@@ -38,13 +38,13 @@ Level 6:
    Start Pos: (-15,15)
    End Pos: (0,15)
    Gas0 Pos ()
-   Solution: x = cbrt(x) + 300
-             y = (-x^2) * cbrt(y)
+   Solution: x = cbrt(x) * y
+             y = (cbrt(y) * -1) * x/2 
 
 Level 7:
    Start Pos: (-15,15)
    End Pos:   (-15,-15)
-   Solution: x = 300y
+   Solution: x = y
              y = -x^2
 
 Level 8:
@@ -57,17 +57,9 @@ Level 8:
 
 
 Level 9:
-<<<<<<< HEAD
-   Start Pos: (-10, 0)
-   End Pos: (10, 0)
-   Gas0 Pos: (0, 10)
-   Gas1 Pos: (0, -10)
-   Solution: (y, -x) or (-y, x)
-=======
    Start Pos: (-10,0)
    End Pos: (10,0)
    Solution: 
->>>>>>> af2fe501f3cd570ce50edf05268e792621331c43
 
 Level 10:
    Start Pos:

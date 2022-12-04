@@ -65,7 +65,7 @@ impl GameState {
                     end_location: (0., 0.),
                     x_functions: vec![
                         ("x^2".into(), |x, _y| x.powf(2.)), 
-                        ("1".into(), |_x, _y| 3.),
+                        ("1".into(), |_x, _y| 1.),
                         ("-1".into(), |_x, _y| -1.),
                         ("y".into(), |_x, y| y),
                     ],
@@ -117,26 +117,6 @@ impl GameState {
                     tick_time: 0.0001,
                 },
                 Level {
-                    // Parabola Level
-                    level_number: 3, 
-                    start_location: (0., 0.),
-                    end_location: (3., 9.),
-                    x_functions: vec![
-                        ("x^2".into(), |x, _y| x.powf(2.)), 
-                        ("-3".into(), |_x, _y| -3.),
-                        ("x/2".into(), |x, _y| (x/2.)),
-                        ("y".into(), |_x, y| y),
-                    ],
-                    y_functions: vec![
-                        ("10".into(), |_x, _y| 10.), 
-                        ("1/2".into(), |_x, _y| (1./2.)),
-                        ("cosx".into(), |x, _y| x.cos()),
-                        ("y".into(), |_x, y| y),
-                    ],
-                    gas_locations: Vec::new(),
-                    tick_time: 0.01,
-                },
-                Level {
                     level_number: 3, 
                     start_location: (0.,0.),
                     end_location: (3., 9.),
@@ -182,7 +162,7 @@ impl GameState {
                 Level {
                     level_number: 5, 
                     start_location: (-15.,15.),
-                    end_location: (0., -15.),
+                    end_location: (-1., -18.5),
                     x_functions: vec![
                         ("cbrt(x)".into(), |x, _y| x.cbrt()), 
                         ("300".into(), |_x, _y| 300.),
@@ -195,28 +175,47 @@ impl GameState {
                         ("cbrt(y)".into(), |x, _y| x.cbrt()),
                         ("-1".into(), |_x, _y| -1.),
                         ],
-                    gas_locations: vec![(-14.,-7.5)],
-                    tick_time: 0.01,
+                    gas_locations: vec![(-14.,-16.), (-25.,5.),(-25.,-5.)],
+                    tick_time: 0.001,
+                },
+                Level {
+                    level_number: 6, 
+                    start_location: (-15.,15.),
+                    end_location: (-15., -15.),
+                    x_functions: vec![
+                        ("cbrt(x)".into(), |x, _y| x.cbrt()), 
+                        ("300".into(), |_x, _y| 300.),
+                        ("x/2".into(), |x, _y| (x/2.)),
+                        ("y".into(), |_x, y| y),
+                    ],
+                    y_functions: vec![
+                        ("x/2".into(), |x, _y| x/2.), 
+                        ("y".into(), |_x, y| y),
+                        ("cbrt(y)".into(), |x, _y| x.cbrt()),
+                        ("-1".into(), |_x, _y| -1.),
+                        ],
+                    gas_locations: vec![(15.,-15.), (26.5,0.),(0.,18.)],
+                    tick_time: 0.001,
                 },
                 Level {
                     // Circle Function
-                    level_number: 8, 
-                    start_location: (-10., 0.),
-                    end_location: (10., 0.),
+                    level_number: 7, 
+                    start_location: (-10., 5.),
+                    end_location: (10., 4.3),
                     x_functions: vec![
-                        ("x".into(), |x, _y| x), 
+                        ("x^2".into(), |x, _y| x.powf(2.)), 
                         ("y".into(), |_x, y| y),
                         ("1".into(), |_x, _y| 1.),
                         ("-1".into(), |_x, _y| -1.),
                     ],
                     y_functions: vec![
                         ("x".into(), |x, _y| x), 
-                        ("y".into(), |_x, y| y),
+                        ("y/2".into(), |_x, y| y/2.),
                         ("1".into(), |_x, _y| 1.),
                         ("-1".into(), |_x, _y| -1.),
                         ],
                     gas_locations: vec![
-                        (0., 10.),
+                        (0., 15.),
                         (0., -10.),
                     ],
                     tick_time: 0.001,
