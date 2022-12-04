@@ -1,6 +1,7 @@
 use bevy::{
     prelude::*,
-    render::camera::ScalingMode
+    render::camera::ScalingMode,
+    asset::AssetServer
 };
 
 mod constants; 
@@ -8,7 +9,7 @@ mod gradient_field;
 mod ui;
 mod level;
 
-use constants::{TICK_TIME, VERTICAL_WINDOW_HEIGHT, BACKGROUND_COLOR};
+use constants::{TICK_TIME, VERTICAL_WINDOW_HEIGHT, BACKGROUND_COLOR, BASE_ARROW_SCALE};
 
 use gradient_field::{GradientArrowPlugin, Gradient, GradientOperation, GradientOperationState};
 
@@ -51,9 +52,9 @@ impl GameState {
                     start_location: (-5., 0.),
                     end_location: (5., 0.),
                     x_functions: vec![
-                        ("x^2".into(), |x, _y| x.powf(2.)), 
-                        ("3".into(), |_x, _y| 3.),
-                        ("x".into(), |x, _y| x),
+                        ("-x^2".into(), |x, _y| -1.*x.powf(2.)), 
+                        ("-3".into(), |_x, _y| -3.),
+                        ("x/2".into(), |x, _y| x/2.),
                         ("y".into(), |_x, y| y),
                     ],
                     y_functions: vec![
@@ -92,17 +93,18 @@ fn setup(mut commands: Commands) {
 }
 
 /// Create player 
-fn spawn_player(mut commands: Commands) {
-    commands.spawn(SpriteBundle {
-        sprite: Sprite {
-            color: Color::rgb(0.9, 0.9, 0.9),
-            custom_size: Some(Vec2::new(1., 1.)),
-            ..default()
-        },
-        transform: Transform::from_xyz(5., 0., 0.), // set position of player
-        ..default()
-    })
-    .insert(Player);
+fn spawn_player(mut commands: Commands, asset_server: Res<AssetServer>) {
+    commands
+        .spawn(SpriteBundle {
+            texture: asset_server.load("../assets/pixil-frame-0 (1).png"),        
+            transform: Transform::from_xyz(0., 0., 0.) // set initial position to (0,0)
+                    .with_scale(Vec3::new(100.*BASE_ARROW_SCALE, 100.*BASE_ARROW_SCALE, 1.)) // with no scaling 
+                    .with_rotation(Quat::from_rotation_z(0.)), // with no rotation
+                ..default()
+            
+        })
+        .insert(Player);
+        
 }
 
 
