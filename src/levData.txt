@@ -1,7 +1,7 @@
 Level 1:
    Start Pos: (-15., -15.)
    End Pos: (0,0)
-   Solution: ▽f(x, y) = [x, y]
+   Solution: ▽f(x, y) = [1, 1]
    Extra Modifications: 
       VERTICAL_WINDOW_HEIGHT: f32 = 40.;
       TICK_TIME: f32 = 0.01
@@ -37,6 +37,7 @@ Level 5:
 Level 6:
    Start Pos: (-15,15)
    End Pos: (0,15)
+   Gas0 Pos ()
    Solution: x = cbrt(x) + 300
              y = (-x^2) * cbrt(y)
 
