@@ -16,7 +16,7 @@ use constants::{VERTICAL_WINDOW_HEIGHT, BACKGROUND_COLOR, PLAYER_SCALE};
 
 use gradient_field::{GradientArrowPlugin, Gradient, GradientOperation, GradientOperationState};
 
-use ui::{UiPlugin, NewLevelText};
+use ui::{UiPlugin, NewLevelText, ButtonXY};
 
 use level::{LevelPlugin};
 
@@ -190,8 +190,6 @@ fn player_movement(mut player: Query<(&mut Player, &mut Transform)>, gradient: Q
             for (mut player_struct, mut transform) in player.iter_mut() {
                 transform.translation.x += game_state.level_info[game_state.current_level as usize].tick_time * gradient.x(transform.translation.x, transform.translation.y);
                 transform.translation.y += game_state.level_info[game_state.current_level as usize].tick_time * gradient.y(transform.translation.x, transform.translation.y);
-                //transform.translation.x += TICK_TIME * gradient.x(transform.translation.x, transform.translation.y);
-                //transform.translation.y += TICK_TIME * gradient.y(transform.translation.x, transform.translation.y);
 
                 // update player struct coords
                 player_struct.x = transform.translation.x;

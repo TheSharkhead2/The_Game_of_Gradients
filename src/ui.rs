@@ -87,6 +87,10 @@ impl NewLevelText {
 }
 
 #[derive(Component)]
+/// Struct to label gas collected text
+pub struct GasCollectedText;
+
+#[derive(Component)]
 pub struct OperationButton {
     pub operation: GradientOperation,
 }
@@ -161,34 +165,73 @@ fn ui_setup(
                                 size: Size::new(Val::Percent(50.), Val::Px(BUTTON_HEIGHT + 2.*BUTTON_SPACING)),
                                 justify_content: JustifyContent::FlexEnd,
                                 align_items: AlignItems::FlexStart,
+                                flex_direction: FlexDirection::Row,
                                 ..default()
                             },
                             ..default()
                         })
                         .with_children(|parent| {
-                            parent 
-                                .spawn(NodeBundle {
-                                    style: Style {
-                                        size: Size::new(Val::Percent(20.), Val::Percent(100.)),
-                                        justify_content: JustifyContent::Center,
-                                        align_items: AlignItems::Center,
-                                        ..default()
-                                    },
+                            parent.spawn(NodeBundle {
+                                style: Style {
+                                    size: Size::new(Val::Percent(30.), Val::Percent(100.)),
+                                    justify_content: JustifyContent::FlexEnd,
+                                    align_items: AlignItems::FlexEnd,
+                                    align_content: AlignContent::FlexEnd,
+                                    flex_direction: FlexDirection::Column,
                                     ..default()
-                                })
-                                .with_children(|parent| {
-                                    parent 
-                                        .spawn(TextBundle::from_section(
-                                            "Level: ",
-                                            TextStyle {
-                                                font: asset_server.load("../assets/fonts/tahoma.ttf"),
-                                                font_size: 20.0, 
-                                                color: Color::rgb(0.9, 0.9, 0.9),
-                                            },
-                                        ))
-                                        .insert(LevelText);
-                                });
+                                },
+                                ..default()
+                            })
+                            .with_children(|parent| {
+                                parent 
+                                    .spawn(NodeBundle {
+                                        style: Style {
+                                            size: Size::new(Val::Percent(100.), Val::Percent(50.)),
+                                            justify_content: JustifyContent::Center,
+                                            align_items: AlignItems::FlexEnd,
+                                            ..default()
+                                        },
+                                        ..default()
+                                    })
+                                    .with_children(|parent| {
+                                        parent 
+                                            .spawn(TextBundle::from_section(
+                                                "Level: ",
+                                                TextStyle {
+                                                    font: asset_server.load("../assets/fonts/tahoma.ttf"),
+                                                    font_size: 20.0, 
+                                                    color: Color::rgb(0.9, 0.9, 0.9),
+                                                },
+                                            ))
+                                            .insert(LevelText);
+                                    });
                                 
+                                
+                                // add gas collected text 
+                                parent 
+                                    .spawn(NodeBundle {
+                                        style: Style {
+                                            size: Size::new(Val::Percent(100.), Val::Percent(50.)),
+                                            justify_content: JustifyContent::Center,
+                                            align_items: AlignItems::FlexEnd,
+                                            ..default()
+                                        },
+                                        visibility: Visibility { is_visible: false },
+                                        ..default()
+                                    })
+                                    .with_children(|parent| {
+                                        parent 
+                                            .spawn(TextBundle::from_section(
+                                                "Gas Collected: ",
+                                                TextStyle {
+                                                    font: asset_server.load("../assets/fonts/tahoma.ttf"),
+                                                    font_size: 20.0, 
+                                                    color: Color::rgb(0.9, 0.9, 0.9),
+                                                },
+                                            ));
+                                    })
+                                    .insert(GasCollectedText);
+                            });
                         });
                 });
 
@@ -214,6 +257,7 @@ fn ui_setup(
                             },
                         ))
                         .insert(NewLevelText::new());
+
                 });
 
             // x and y components text and add/multiply button
@@ -463,6 +507,29 @@ fn ui_setup(
                         });
                 });
         });
+}
+
+/// Update gas collected text 
+fn update_gas_collected_text(
+    mut query: Query<(&Children, &mut Visibility), With<GasCollectedText>>,
+    mut game_state: Query<&mut GameState>,
+    mut text_query: Query<&mut Text>,
+) {
+    let game_state = game_state.single_mut(); // get game state 
+
+    // update gas collected text
+    for (children, mut visibility) in query.iter_mut() {
+        if game_state.level_info[game_state.current_level as usize].gas_locations.len() > 0 { // if there are gas cans this level 
+            let mut text = text_query.get_mut(children[0]).unwrap(); // get text
+            visibility.is_visible = true; // make visible
+            // update text
+            text.sections[0].value = format!("Gas Collected: {}/{}", game_state.gas_collected.iter().sum::<u32>(), game_state.level_info[game_state.current_level as usize].gas_locations.len());
+        } else {
+            visibility.is_visible = false; // hide text if no gas cans this level 
+        }
+        
+    }
+    
 }
 
 /// Update system for new level text 
@@ -795,5 +862,6 @@ impl Plugin for UiPlugin {
         app.add_system(operation_state_button_handling);
         app.add_system(current_level_text_update);
         app.add_system(new_level_text_system);
+        app.add_system(update_gas_collected_text);
     }
 }
