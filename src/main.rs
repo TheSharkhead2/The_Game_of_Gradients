@@ -180,6 +180,25 @@ impl GameState {
                     tick_time: 0.001,
                 },
                 Level {
+                    level_number: 5, 
+                    start_location: (-15.,15.),
+                    end_location: (0., -15.),
+                    x_functions: vec![
+                        ("cbrt(x)".into(), |x, _y| x.cbrt()), 
+                        ("300".into(), |_x, _y| 300.),
+                        ("x/2".into(), |x, _y| (x/2.)),
+                        ("y".into(), |_x, y| y),
+                    ],
+                    y_functions: vec![
+                        ("x/2".into(), |x, _y| x/2.), 
+                        ("y".into(), |_x, y| y),
+                        ("cbrt(y)".into(), |x, _y| x.cbrt()),
+                        ("-1".into(), |_x, _y| -1.),
+                        ],
+                    gas_locations: vec![(-14.,-7.5)],
+                    tick_time: 0.01,
+                },
+                Level {
                     // Circle Function
                     level_number: 8, 
                     start_location: (-10., 0.),
