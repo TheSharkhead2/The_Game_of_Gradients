@@ -1,3 +1,5 @@
+use std::f32::consts::PI;
+
 use bevy::{
     prelude::*,
     render::camera::ScalingMode,
@@ -13,7 +15,7 @@ use constants::{TICK_TIME, VERTICAL_WINDOW_HEIGHT, BACKGROUND_COLOR, PLAYER_SCAL
 
 use gradient_field::{GradientArrowPlugin, Gradient, GradientOperation, GradientOperationState};
 
-use ui::{UiPlugin};
+use ui::{UiPlugin, NewLevelText};
 
 use level::{LevelPlugin};
 
@@ -25,6 +27,7 @@ pub struct Level {
     pub end_location: (f32, f32), // ending location
     pub x_functions: Vec<(String, fn(f32, f32) -> f32)>, // functions available for x dimension (String representation of function, function itself)
     pub y_functions: Vec<(String, fn(f32, f32) -> f32)>, // functions available for y dimension (String representation of function, function itself)
+    pub gas_locations: Vec<(f32, f32)>, // locations of gas stops
 }
 
 #[derive(Component, Clone, Debug)]
@@ -55,7 +58,7 @@ impl GameState {
                     end_location: (5., 0.),
                     x_functions: vec![
                         ("-x^2".into(), |x, _y| -1.*x.powf(2.)), 
-                        ("-3".into(), |_x, _y| -3.),
+                        ("3".into(), |_x, _y| 3.),
                         ("x/2".into(), |x, _y| x/2.),
                         ("y".into(), |_x, y| y),
                     ],
@@ -65,6 +68,7 @@ impl GameState {
                         ("y".into(), |_x, y| y),
                         ("cos(x)".into(), |x, _y| x.cos()),
                     ],
+                    gas_locations: Vec::new(),
                 }
             ],
             current_level: 0,
@@ -100,7 +104,7 @@ fn spawn_player(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands
         .spawn(SpriteBundle {
             texture: asset_server.load("../assets/player.png"),        
-            transform: Transform::from_xyz(0., 0., 0.) // set initial position to (0,0)
+            transform: Transform::from_xyz(0., 0., 1.) // set initial position to (0,0)
                     .with_scale(Vec3::new(PLAYER_SCALE, PLAYER_SCALE, 1.)) // with no scaling 
                     .with_rotation(Quat::from_rotation_z(0.)), // with no rotation
                 ..default()
@@ -121,6 +125,10 @@ fn player_movement(mut player: Query<(&Player, &mut Transform)>, gradient: Query
             for (_, mut transform) in player.iter_mut() {
                 transform.translation.x += TICK_TIME * gradient.x(transform.translation.x, transform.translation.y);
                 transform.translation.y += TICK_TIME * gradient.y(transform.translation.x, transform.translation.y);
+
+                // update player angle 
+                let angle = gradient.y(transform.translation.x, transform.translation.y).atan2(gradient.x(transform.translation.x, transform.translation.y)) - PI/2.;
+                transform.rotation = Quat::from_rotation_z(angle);
             }
         }, 
         Simulating::NotSimulating => { // set player to start location when not simulating
