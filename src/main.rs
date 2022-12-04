@@ -63,9 +63,6 @@ impl GameState {
                     start_location: (-15., -15.),
                     end_location: (0., 0.),
                     x_functions: vec![
-                        ("x".into(), |x, _y| x), 
-                        ("y".into(), |_x, y| y),
-                        ("1".into(), |_x, _y| 1.),
                         ("x^2".into(), |x, _y| x.powf(2.)), 
                         ("1".into(), |_x, _y| 10.),
                         ("-1".into(), |_x, _y| -1.),
@@ -78,6 +75,7 @@ impl GameState {
                         ("y".into(), |_x, y| y),
                     ],
                     gas_locations: Vec::new(),
+                    tick_time: 0.01,
                 },
                 Level {
                     level_number: 1, 
@@ -96,11 +94,12 @@ impl GameState {
                         ("y".into(), |_x, y| y),
                     ],
                     gas_locations: Vec::new(),
+                    tick_time: 0.01,
                 },
                 Level {
                     level_number: 2, 
                     start_location: (-11.7,-14.8),
-                    end_location: (14., 12.),
+                    end_location: (14.5,12.),
                     x_functions: vec![
                         ("y^2".into(), |_x, y| y.powf(2.)), 
                         ("-3".into(), |_x, _y| -3.),
@@ -114,6 +113,7 @@ impl GameState {
                         ("x^2".into(), |x, _y| x.powf(2.)),
                     ],
                     gas_locations: Vec::new(),
+                    tick_time: 0.0001,
                 },
                 Level {
                     level_number: 3, 
@@ -126,32 +126,13 @@ impl GameState {
                         ("y".into(), |_x, y| y),
                     ],
                     y_functions: vec![
-                        ("x".into(), |x, _y| x), 
+                        ("x^2".into(), |x, _y| x.powf(2.)), 
                         ("y".into(), |_x, y| y),
                         ("1".into(), |_x, _y| 1.),
                         ("-1".into(), |_x, _y| -1.),
                         ],
                     gas_locations: Vec::new(),
-                    tick_time: 0.01
-                },
-                Level {
-                    level_number: 1, 
-                    start_location: (0., 0.),
-                    end_location: (3., 9.),
-                    x_functions: vec![
-                        ("x^2".into(), |x, _y| x.powf(2.)), 
-                        ("y^2".into(), |_x, y| y.powf(2.)),
-                        ("1".into(), |_x, _y| 1.),
-                        ("-1".into(), |_x, _y| -1.),
-                    ],
-                    y_functions: vec![
-                        ("x^2".into(), |x, _y| x.powf(2.)), 
-                        ("y^2".into(), |_x, y| y.powf(2.)),
-                        ("1".into(), |_x, _y| 1.),
-                        ("-1".into(), |_x, _y| -1.),
-                        ],
-                    gas_locations: Vec::new(),
-                    tick_time: 0.01
+                    tick_time: 0.01,
                 },
             ],
             current_level: 0,
