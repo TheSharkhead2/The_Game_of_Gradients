@@ -3,9 +3,10 @@ use bevy::{
     asset::AssetServer,
 };
 
-use crate::{GameState, Player, Simulating, Gradient, NewLevelText};
+use crate::ui::GradComponentButton;
+use crate::{GameState, Player, Simulating, Gradient, NewLevelText, ButtonXY};
 
-use crate::constants::{ENDING_LOCATION_ERROR, PORTAL_SCALE, MAX_GAS_CANS, GAS_CAN_SCALE};
+use crate::constants::{ENDING_LOCATION_ERROR, PORTAL_SCALE, MAX_GAS_CANS, GAS_CAN_SCALE, NORMAL_BUTTON_COLOR, NORMAL_BUTTON_TEXT_COLOR};
 
 #[derive(Component)]
 /// struct to label ending location sprite 
@@ -53,6 +54,8 @@ fn level_update_system(
     mut simulating_state: ResMut<State<Simulating>>,
     mut gradient: Query<&mut Gradient>,
     mut new_level_text: Query<&mut NewLevelText>,
+    mut text_query: Query<&mut Text>,
+    mut grad_buttons: Query<(&Children, &mut BackgroundColor, &mut GradComponentButton)>,
 ) {
     let (_, player_transform) = player.single_mut(); // should be exclusively 1 player
 
@@ -89,6 +92,24 @@ fn level_update_system(
             new_level_text.fade_in = true;
             new_level_text.fade_out = false;
             new_level_text.level = game_state.current_level + 1;
+        }
+
+        for (children, mut background_color, mut grad_component_button) in grad_buttons.iter_mut() { // reset gradient buttons
+            let mut text = text_query.get_mut(children[0]).unwrap();
+            
+            *background_color = NORMAL_BUTTON_COLOR.into(); // update button background 
+            text.sections[0].style.color = NORMAL_BUTTON_TEXT_COLOR; // update button text color
+            grad_component_button.used = false; // update button used
+
+            match grad_component_button.xy {
+                ButtonXY::X => {
+                    text.sections[0].value = game_state.level_info[game_state.current_level as usize].x_functions[grad_component_button.id as usize].0.clone(); // update button text
+                },
+                ButtonXY::Y => {
+                    text.sections[0].value = game_state.level_info[game_state.current_level as usize].y_functions[grad_component_button.id as usize].0.clone(); // update button text
+                },
+            }
+
         }
     }
 }
