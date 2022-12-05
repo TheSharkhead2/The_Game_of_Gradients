@@ -59,23 +59,24 @@ impl GameState {
         GameState {
             level_info: vec![
                 Level {
+                    // Linear Function
                     level_number: 0, 
                     start_location: (-15., -15.),
                     end_location: (0., 0.),
                     x_functions: vec![
                         ("x^2".into(), |x, _y| x.powf(2.)), 
-                        ("1".into(), |_x, _y| 10.),
+                        ("1".into(), |_x, _y| 1.),
                         ("-1".into(), |_x, _y| -1.),
                         ("y".into(), |_x, y| y),
                     ],
                     y_functions: vec![
                         ("-100".into(), |_x, _y| -100.), 
-                        ("1".into(), |_x, _y| (10.)),
+                        ("1".into(), |_x, _y| 1.),
                         ("x".into(), |x, _y| x),
                         ("y".into(), |_x, y| y),
                     ],
                     gas_locations: Vec::new(),
-                    tick_time: 0.01,
+                    tick_time: 0.015,
                 },
                 Level {
                     level_number: 1, 
@@ -135,28 +136,33 @@ impl GameState {
                     tick_time: 0.01,
                 },
                 Level {
+                    // Spiral Level
                     level_number: 4, 
-                    start_location: (-15.,15.),
+                    start_location: (-15., -15.),
                     end_location: (0., 0.),
                     x_functions: vec![
-                        ("-x".into(), |x, _y| -1.*x), 
-                        ("1".into(), |_x, _y| 1.),
-                        ("x/2".into(), |x, _y| (x/2.)),
+                        ("x".into(), |x, _y| x), 
                         ("y".into(), |_x, y| y),
+                        ("1".into(), |_x, _y| 1.),
+                        ("-1".into(), |_x, _y| -1.),
                     ],
                     y_functions: vec![
                         ("x".into(), |x, _y| x), 
                         ("y".into(), |_x, y| y),
-                        ("sin(x)".into(), |x, _y| x.sin()),
+                        ("1".into(), |_x, _y| 1.),
                         ("-1".into(), |_x, _y| -1.),
                         ],
-                    gas_locations: vec![(-14.,-7.5)],
-                    tick_time: 0.01,
+                    gas_locations: vec![
+                        (-14., -7.5),
+                        (-10., 0.),
+                        (0., 2.1),
+                    ],
+                    tick_time: 0.001,
                 },
                 Level {
                     level_number: 5, 
                     start_location: (-15.,15.),
-                    end_location: (0., -15.),
+                    end_location: (-1., -18.5),
                     x_functions: vec![
                         ("cbrt(x)".into(), |x, _y| x.cbrt()), 
                         ("300".into(), |_x, _y| 300.),
@@ -169,10 +175,97 @@ impl GameState {
                         ("cbrt(y)".into(), |x, _y| x.cbrt()),
                         ("-1".into(), |_x, _y| -1.),
                         ],
-                    gas_locations: vec![(-14.,-7.5)],
-                    tick_time: 0.01,
+                    gas_locations: vec![(-14.,-16.), (-25.,5.),(-25.,-5.)],
+                    tick_time: 0.001,
                 },
+                Level {
+                    level_number: 6, 
+                    start_location: (-15.,15.),
+                    end_location: (-15., -15.),
+                    x_functions: vec![
+                        ("cbrt(x)".into(), |x, _y| x.cbrt()), 
+                        ("300".into(), |_x, _y| 300.),
+                        ("x/2".into(), |x, _y| (x/2.)),
+                        ("y".into(), |_x, y| y),
+                    ],
+                    y_functions: vec![
+                        ("x/2".into(), |x, _y| x/2.), 
+                        ("y".into(), |_x, y| y),
+                        ("cbrt(y)".into(), |x, _y| x.cbrt()),
+                        ("-1".into(), |_x, _y| -1.),
+                        ],
+                    gas_locations: vec![ (26.,0.),(0.,18.)],
+                    tick_time: 0.001,
+                },
+                Level {
+                    // Circle Function
+                    level_number: 7, 
+                    start_location: (-10., 5.),
+                    end_location: (10., 4.3),
+                    x_functions: vec![
+                        ("x^2".into(), |x, _y| x.powf(2.)), 
+                        ("y".into(), |_x, y| y),
+                        ("1".into(), |_x, _y| 1.),
+                        ("-1".into(), |_x, _y| -1.),
+                    ],
+                    y_functions: vec![
+                        ("x".into(), |x, _y| x), 
+                        ("y/2".into(), |_x, y| y/2.),
+                        ("1".into(), |_x, _y| 1.),
+                        ("-1".into(), |_x, _y| -1.),
+                        ],
+                    gas_locations: vec![
+                        (0., 15.),
+                        
 
+                    ],
+                    tick_time: 0.001,
+                },
+                Level {
+                    // Circle Function
+                    level_number: 8, 
+                    start_location: (-10., 0.),
+                    end_location: (10., 0.),
+                    x_functions: vec![
+                        ("x^2".into(), |x, _y| x.powf(2.)), 
+                        ("y".into(), |_x, y| y),
+                        ("1".into(), |_x, _y| 1.),
+                        ("-1".into(), |_x, _y| -1.),
+                    ],
+                    y_functions: vec![
+                        ("x".into(), |x, _y| x), 
+                        ("y/2".into(), |_x, y| y/2.),
+                        ("1".into(), |_x, _y| 1.),
+                        ("-1".into(), |_x, _y| -1.),
+                        ],
+                    gas_locations: vec![
+                        (0., 10.),
+                        (0., -10.),
+                    ],
+                    tick_time: 0.001,
+                },
+                Level {
+                    level_number: 9, 
+                    start_location: (2., 0.3),
+                    end_location: (0., -10.),
+                    x_functions: vec![
+                        ("x".into(), |x, _y| x), 
+                        ("y".into(), |_x, y| y),
+                        ("xy".into(), |x, y| x*y),
+                        ("-1".into(), |_x, _y| -1.),
+                    ],
+                    y_functions: vec![
+                        ("x".into(), |x, _y| x), 
+                        ("y".into(), |_x, y| y),
+                        ("1".into(), |_x, _y| 1.),
+                        ("-1".into(), |_x, _y| -1.),
+                        ],
+                    gas_locations: vec![
+                        (2., 4.),
+                        (17., 0.),
+                    ],
+                    tick_time: 0.001,
+                },
             ],
             current_level: 0,
             gas_collected: vec![0],
@@ -207,8 +300,8 @@ fn setup(mut commands: Commands) {
 fn spawn_player(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands
         .spawn(SpriteBundle {
-            texture: asset_server.load("../assets/player.png"),        
-            transform: Transform::from_xyz(0., 0., 1.) // set initial position to (0,0)
+            texture: asset_server.load("player.png"),        
+            transform: Transform::from_xyz(5., 0., 1.) // set initial position to (0,0)
                     .with_scale(Vec3::new(PLAYER_SCALE, PLAYER_SCALE, 1.)) // with no scaling 
                     .with_rotation(Quat::from_rotation_z(0.)), // with no rotation
                 ..default()

@@ -26,7 +26,7 @@ fn ending_location_setup(
 ) {
     commands 
         .spawn(SpriteBundle {
-            texture: asset_server.load("../assets/portal.png"),
+            texture: asset_server.load("portal.png"),
             transform: Transform::from_xyz(0., 0., 0.)
                 .with_scale(Vec3::splat(PORTAL_SCALE)),
             ..default()
@@ -122,7 +122,7 @@ pub fn gas_setup(
     for i in 0..MAX_GAS_CANS {
         commands
             .spawn(SpriteBundle {
-                texture: asset_server.load("../assets/gas_can.png"),
+                texture: asset_server.load("gas_can.png"),
                 transform: Transform::from_xyz(0., 0., 0.)
                     .with_scale(Vec3::splat(GAS_CAN_SCALE)),
                 visibility: Visibility {

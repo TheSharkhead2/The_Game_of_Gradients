@@ -150,7 +150,7 @@ fn ui_setup(
                                     parent.spawn(TextBundle::from_section(
                                         "Simulate",
                                         TextStyle {
-                                            font: asset_server.load("../assets/fonts/tahoma.ttf"),
+                                            font: asset_server.load("fonts/tahoma.ttf"),
                                             font_size: 20.0, 
                                             color: Color::rgb(0.9, 0.9, 0.9),
                                         },
@@ -198,7 +198,7 @@ fn ui_setup(
                                             .spawn(TextBundle::from_section(
                                                 "Level: ",
                                                 TextStyle {
-                                                    font: asset_server.load("../assets/fonts/tahoma.ttf"),
+                                                    font: asset_server.load("fonts/tahoma.ttf"),
                                                     font_size: 20.0, 
                                                     color: Color::rgb(0.9, 0.9, 0.9),
                                                 },
@@ -224,7 +224,7 @@ fn ui_setup(
                                             .spawn(TextBundle::from_section(
                                                 "Gas Collected: ",
                                                 TextStyle {
-                                                    font: asset_server.load("../assets/fonts/tahoma.ttf"),
+                                                    font: asset_server.load("fonts/tahoma.ttf"),
                                                     font_size: 20.0, 
                                                     color: Color::rgb(0.9, 0.9, 0.9),
                                                 },
@@ -251,7 +251,7 @@ fn ui_setup(
                         .spawn(TextBundle::from_section(
                             "Level ",
                             TextStyle {
-                                font: asset_server.load("../assets/fonts/tahoma.ttf"),
+                                font: asset_server.load("fonts/tahoma.ttf"),
                                 font_size: 80.0, 
                                 color: Color::rgba(0.7, 0.9, 0.7, 0.),
                             },
@@ -314,7 +314,7 @@ fn ui_setup(
                                                 .spawn(TextBundle::from_section(
                                                         "x = ",
                                                         TextStyle {
-                                                            font: asset_server.load("../assets/fonts/tahoma.ttf"),
+                                                            font: asset_server.load("fonts/tahoma.ttf"),
                                                             font_size: 30.,
                                                             color: Color::rgb(0.9, 0.9, 0.9)
                                                         }
@@ -338,7 +338,7 @@ fn ui_setup(
                                             .spawn(TextBundle::from_section(
                                                     "y = ",
                                                     TextStyle {
-                                                        font: asset_server.load("../assets/fonts/tahoma.ttf"),
+                                                        font: asset_server.load("fonts/tahoma.ttf"),
                                                         font_size: 30.,
                                                         color: Color::rgb(0.9, 0.9, 0.9)
                                                     }
