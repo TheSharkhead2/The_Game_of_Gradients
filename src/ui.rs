@@ -535,12 +535,13 @@ fn update_gas_collected_text(
 /// Update system for new level text 
 fn new_level_text_system(
     mut query: Query<(&mut Text, &mut NewLevelText)>,
+    time: Res<Time>,
 ) {
     let (mut text, mut text_info) = query.single_mut();
 
     // update text
     if text_info.fade_in { // if currently fading in, increment alpha until 1.0 
-        text_info.alpha += NEW_LEVEL_TEXT_FADE_IN_SPEED; 
+        text_info.alpha += NEW_LEVEL_TEXT_FADE_IN_SPEED * time.delta_seconds(); 
         text.sections[0].style.color = Color::rgba(LEVEL_COMPLETE_TEXT_COLOR.0, LEVEL_COMPLETE_TEXT_COLOR.1, LEVEL_COMPLETE_TEXT_COLOR.2, text_info.alpha);
 
         text.sections[0].value = format!("Level {}", text_info.level);
@@ -550,7 +551,7 @@ fn new_level_text_system(
             text_info.fade_out = true;
         }
     } else if text_info.fade_out {
-        text_info.alpha -= NEW_LEVEL_TEXT_FADE_IN_SPEED; // if currently fading out, decrement alpha until 0.0 
+        text_info.alpha -= NEW_LEVEL_TEXT_FADE_IN_SPEED * time.delta_seconds(); // if currently fading out, decrement alpha until 0.0 
         text.sections[0].style.color = Color::rgba(LEVEL_COMPLETE_TEXT_COLOR.0, LEVEL_COMPLETE_TEXT_COLOR.1, LEVEL_COMPLETE_TEXT_COLOR.2, text_info.alpha);
 
         if text_info.alpha <= 0.0 { // if alpha is 0.0, stop fading out and reset text 

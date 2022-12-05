@@ -32,7 +32,7 @@ pub const SIM_BUTTON_ON: Color = Color::rgb(0.8, 0.1, 0.1); // color for simulat
 pub const SIM_BUTTON_OFF_HOVER: Color = Color::rgb(0.2, 0.9, 0.2); // color for simulate button when not simulating and hovered
 pub const SIM_BUTTON_ON_HOVER: Color = Color::rgb(0.9, 0.2, 0.2); // color for simulate button when simulating and hovered
 
-pub const NEW_LEVEL_TEXT_FADE_IN_SPEED: f32 = 0.03; // speed at which new level text fades in
+pub const NEW_LEVEL_TEXT_FADE_IN_SPEED: f32 = 0.5; // speed at which new level text fades in
 pub const LEVEL_COMPLETE_TEXT_COLOR: (f32, f32, f32) = (0.4, 0.8, 0.4); // rgb values for level complete text
 
 pub const MAX_GAS_CANS: u32 = 5; // maximum number of gas cans that can be collected
