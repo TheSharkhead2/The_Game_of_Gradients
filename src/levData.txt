@@ -63,6 +63,7 @@ Level 9:
              y = x
 
 Level 10:
-   Start Pos:
-   End Pos:
-   Solution:
+   Start Pos: (2, 0.3)
+   End Pos: (0., -10.)
+   Solution: x = xy - x
+             y = y - x + 1

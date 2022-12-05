@@ -244,9 +244,30 @@ impl GameState {
                     ],
                     tick_time: 0.001,
                 },
-
+                Level {
+                    level_number: 9, 
+                    start_location: (2., 0.3),
+                    end_location: (0., -10.),
+                    x_functions: vec![
+                        ("x".into(), |x, _y| x), 
+                        ("y".into(), |_x, y| y),
+                        ("xy".into(), |x, y| x*y),
+                        ("-1".into(), |_x, _y| -1.),
+                    ],
+                    y_functions: vec![
+                        ("x".into(), |x, _y| x), 
+                        ("y".into(), |_x, y| y),
+                        ("1".into(), |_x, _y| 1.),
+                        ("-1".into(), |_x, _y| -1.),
+                        ],
+                    gas_locations: vec![
+                        (2., 4.),
+                        (17., 0.),
+                    ],
+                    tick_time: 0.001,
+                },
             ],
-            current_level: 0,
+            current_level: 9,
             gas_collected: vec![0],
         }
     }
