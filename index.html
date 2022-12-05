@@ -4,17 +4,84 @@
     <style>
       body {
         display: flex;
-        justify-content: center;
+        justify-content: flex-end;
         align-items: center;
+        align-content: flex-end;
+        flex-direction: column-reverse;
         background-color: #262626;
+        height: 100%;
       }
       canvas {
         background-color: #262626;
       }
+      div.text {
+        margin-top: 50px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        align-content: center;
+        flex-direction: column;
+        width: 1200px;
+      }
+      div.paragraph {
+        width: 100%;
+        align-items: flex-start;
+      }
+      h1 {
+        color: rgb(229, 229, 229);
+        font-size: 3rem;
+        font-family: 'tahoma';
+        font-weight: 300;
+        margin: 0;
+        padding: 0;
+      }
+      p {
+        color: rgb(229, 229, 229);
+        font-size: 1rem;
+        font-family: 'tahoma', "sans-serif";
+        font-weight: 1;
+        margin: 10px;
+        padding: 0;
+        text-indent: 30px;
+      }
     </style>
   </head>
-  <script type="module">
-    import init from './the_game_of_gradients.js'
-    init()
-  </script>
+  
+  <body>
+    <!-- <canvas id="canvas"></canvas> -->
+    <div>
+      <script type="module">
+        import init from './the_game_of_gradients.js'
+        init()
+      </script>
+    </div>
+
+    <div class="text">
+      <h1>The Game of Gradients</h1>
+
+      <div class="paragraph">
+        <p> Oh no! You have found yourself in a spaceship in the middle of... space! What ever are you going to do? The only thing you can see around you is a mysterious portal in the distance. Maybe if you are able to fly your ship through the portal you can exit the vacuum of space.
+          Now generally just flying into a random portal is a bad idea, but there was no investment into the backstory of the game so you have to live with it.
+        </p>
+        <p>
+          Luckily, because you live in the future and technology has developed significantly, your spaceship is equipped with a top-of-the-line navigation system! Instead of having to manually move your ship up, down, left, or right, you can tell your navigation computer how to move by defining a gradient field that defines the ship's velocity at every point around you! 
+          Then your ship does the rest!  
+        </p>
+        <p>
+          Now I know what you are thinking: <s>"Why can't I just use w-a-s-d?"</s> "How has no one thought of this method of navigation before?" I know right! It is brilliant! But that isn't even the end of it! Your ship is even smart enough to narrow down which functions comprise the x and y components of the gradient field. So all you have to do is combine the options 
+          the computer gives you into a single function for both the x and y components to get where you need to go! 
+        </p>
+        <p>
+          You can combine these function options either by adding them to the current gradient function or multiplying them with the current gradient function. In the bottom right corner of the screen, the 4 upper buttons with functions on them are toggles for including that specific function in the x component 
+          and the 4 lower functions are toggles for including that specific function in the y component. You can only ever have 1 copy of each function in a given gradient component at a time. Additionally, you can toggle whether or not you add to or multiply with the current gradient component by toggling the button that starts displaying "Add." The current x and y gradient components 
+          will be displayed in the bottom left side of the screen. <b>When you have defined a gradient field to your liking, press "Simulate" in the upper left corner!</b> If you attempt doesn't work, simply click "Stop" (which will replace the "Simulate" button) to reset. 
+        </p>
+        <p>
+          Also, be warned that sometimes traversing the portal requires more fuel than your ship has and you will have to pick up a certain number of gas cans before you can enter the portal. 
+        </p>
+      </div>
+
+      
+    </div>
+  </body>
 </html>
