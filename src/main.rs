@@ -194,7 +194,7 @@ impl GameState {
                         ("cbrt(y)".into(), |x, _y| x.cbrt()),
                         ("-1".into(), |_x, _y| -1.),
                         ],
-                    gas_locations: vec![(15.,-15.), (26.,0.),(0.,18.)],
+                    gas_locations: vec![ (26.,0.),(0.,18.)],
                     tick_time: 0.001,
                 },
                 Level {
@@ -216,16 +216,16 @@ impl GameState {
                         ],
                     gas_locations: vec![
                         (0., 15.),
-                        (8., 5.),
-                        (-10., 5.),
+                        
+
                     ],
                     tick_time: 0.001,
                 },
                 Level {
                     // Circle Function
-                    level_number: 7, 
+                    level_number: 8, 
                     start_location: (-10., 0.),
-                    end_location: (-10., 0.),
+                    end_location: (10., 0.),
                     x_functions: vec![
                         ("x^2".into(), |x, _y| x.powf(2.)), 
                         ("y".into(), |_x, y| y),
@@ -239,7 +239,7 @@ impl GameState {
                         ("-1".into(), |_x, _y| -1.),
                         ],
                     gas_locations: vec![
-                        (0., 15.),
+                        (0., 10.),
                         (0., -10.),
                     ],
                     tick_time: 0.001,
