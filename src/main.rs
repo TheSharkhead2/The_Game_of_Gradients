@@ -76,7 +76,7 @@ impl GameState {
                         ("y".into(), |_x, y| y),
                     ],
                     gas_locations: Vec::new(),
-                    tick_time: 0.03,
+                    tick_time: 0.015,
                 },
                 Level {
                     level_number: 1, 
@@ -267,7 +267,7 @@ impl GameState {
                     tick_time: 0.001,
                 },
             ],
-            current_level: 9,
+            current_level: 0,
             gas_collected: vec![0],
         }
     }
