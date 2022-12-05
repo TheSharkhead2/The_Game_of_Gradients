@@ -300,8 +300,8 @@ fn setup(mut commands: Commands) {
 fn spawn_player(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands
         .spawn(SpriteBundle {
-            texture: asset_server.load("../assets/player.png"),        
-            transform: Transform::from_xyz(0., 0., 1.) // set initial position to (0,0)
+            texture: asset_server.load("player.png"),        
+            transform: Transform::from_xyz(5., 0., 1.) // set initial position to (0,0)
                     .with_scale(Vec3::new(PLAYER_SCALE, PLAYER_SCALE, 1.)) // with no scaling 
                     .with_rotation(Quat::from_rotation_z(0.)), // with no rotation
                 ..default()
