@@ -12,7 +12,7 @@ mod ui;
 mod level;
 
 //use constants::{TICK_TIME, VERTICAL_WINDOW_HEIGHT, BACKGROUND_COLOR, PLAYER_SCALE};
-use constants::{VERTICAL_WINDOW_HEIGHT, BACKGROUND_COLOR, PLAYER_SCALE};
+use constants::{VERTICAL_WINDOW_HEIGHT, BACKGROUND_COLOR, PLAYER_SCALE, MOVEMENT_SCALE_PER_SECOND};
 
 use gradient_field::{GradientArrowPlugin, Gradient, GradientOperation, GradientOperationState};
 
@@ -76,7 +76,7 @@ impl GameState {
                         ("y".into(), |_x, y| y),
                     ],
                     gas_locations: Vec::new(),
-                    tick_time: 0.015,
+                    tick_time: 0.012,
                 },
                 Level {
                     level_number: 1, 
@@ -133,7 +133,7 @@ impl GameState {
                         ("-1".into(), |_x, _y| -1.),
                         ],
                     gas_locations: Vec::new(),
-                    tick_time: 0.01,
+                    tick_time: 0.005,
                 },
                 Level {
                     // Spiral Level
@@ -313,15 +313,21 @@ fn spawn_player(mut commands: Commands, asset_server: Res<AssetServer>) {
 
 
 /// move player 
-fn player_movement(mut player: Query<(&mut Player, &mut Transform)>, gradient: Query<&Gradient>, simulating_state: Res<State<Simulating>>, game_state: Query<&GameState>) {
+fn player_movement(
+    mut player: Query<(&mut Player, &mut Transform)>, 
+    gradient: Query<&Gradient>, 
+    simulating_state: Res<State<Simulating>>, 
+    game_state: Query<&GameState>,
+    time: Res<Time>,
+) {
     let gradient = gradient.single(); // should be exclusively 1 gradient
     let game_state = game_state.single(); // should be exclusively 1 game state
  
     match simulating_state.current() {
         Simulating::Simulating => { // move player on if currently simulating 
             for (mut player_struct, mut transform) in player.iter_mut() {
-                transform.translation.x += game_state.level_info[game_state.current_level as usize].tick_time * gradient.x(transform.translation.x, transform.translation.y);
-                transform.translation.y += game_state.level_info[game_state.current_level as usize].tick_time * gradient.y(transform.translation.x, transform.translation.y);
+                transform.translation.x += game_state.level_info[game_state.current_level as usize].tick_time * gradient.x(transform.translation.x, transform.translation.y) * MOVEMENT_SCALE_PER_SECOND*time.delta_seconds();
+                transform.translation.y += game_state.level_info[game_state.current_level as usize].tick_time * gradient.y(transform.translation.x, transform.translation.y) * MOVEMENT_SCALE_PER_SECOND*time.delta_seconds();
 
                 // update player struct coords
                 player_struct.x = transform.translation.x;
