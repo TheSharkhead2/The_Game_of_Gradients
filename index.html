@@ -23,6 +23,16 @@
         flex-direction: column;
         width: 1200px;
       }
+      div.extra {
+        margin-top: 50px;
+        margin-bottom: 100px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        align-content: center;
+        flex-direction: column;
+        width: 100%;
+      }
       div.paragraph {
         width: 100%;
         align-items: flex-start;
@@ -55,7 +65,8 @@
         init()
       </script>
     </div>
-
+    
+    <!-- For some reason I had to reverse this whole thing, so this goes on the bottom -->
     <div class="text">
       <h1>The Game of Gradients</h1>
 
@@ -81,7 +92,20 @@
         </p>
       </div>
 
+      <div class="extra">
+        <h1>But What is this Project?</h1>
+        <div class="paragraph">
+          <p>
+            It is also probably worth talking about what the heck this project is. This is a final project for a multivariable calculus class where we were given essentially no guidelines, so here is what we made! We hope to keep maintaining this game after the project is due, but you know what college student's lives are like...
+          </p>
+          <p>
+            This game is built entirely in <a href="https://www.rust-lang.org/">Rust</a> using the <a href="https://bevyengine.org/">Bevy</a> game engine. Why is that cool? Well Bevy allows us to compile the game not just to desktop, but also web assembly! Hence why you can play the game just above this. Plus, it is a wonder to work with. You can read through the code on <a href="https://github.com/TheSharkhead2/The_Game_of_Gradients">Github</a>.
+          </p>
+        </div>
+        
+      </div>
       
     </div>
+    
   </body>
 </html>
