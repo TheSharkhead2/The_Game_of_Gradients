@@ -22,7 +22,7 @@ pub const PRESSED_BUTTON_COLOR: Color = Color::rgb(0.3, 0.3, 0.3);
 pub const HOVERED_PRESSED_BUTTON_COLOR: Color = Color::rgb(0.4, 0.4, 0.4); // color for hovering over pressed button
 pub const NORMAL_BUTTON_TEXT_COLOR: Color = Color::rgb(0.9, 0.9, 0.9); // normal color for text on buttons
 pub const PRESSED_BUTTON_TEXT_COLOR: Color = Color::rgb(0.6, 0.6, 0.6); // color for text on pressed buttons
-pub const BUTTONS_PER_DIMENSION: u32 = 4; // number of buttons, or function components, per dimension (x, y)
+pub const MAX_COMPONENTS_PER_DIMENSION: u32 = 5; // max number of function components per dimension (x, y)
 pub const BUTTON_SPACING: f32 = 10.; // spacing between buttons in pixels 
 pub const BUTTON_WIDTH: f32 = 100.; // width of buttons in pixels
 pub const BUTTON_HEIGHT: f32 = 60.; // height of buttons in pixels
@@ -36,3 +36,6 @@ pub const NEW_LEVEL_TEXT_FADE_IN_SPEED: f32 = 0.5; // speed at which new level t
 pub const LEVEL_COMPLETE_TEXT_COLOR: (f32, f32, f32) = (0.4, 0.8, 0.4); // rgb values for level complete text
 
 pub const MAX_GAS_CANS: u32 = 5; // maximum number of gas cans that can be collected
+
+pub const DEFAULT_FONT: &str = "../assets/fonts/tahoma.ttf"; // default font location
+pub const DEFAULT_FONT_SIZE: f32 = 20.; // base font size all around

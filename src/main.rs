@@ -10,6 +10,7 @@ mod constants;
 mod gradient_field;
 mod ui;
 mod level;
+mod ui_functions;
 
 //use constants::{TICK_TIME, VERTICAL_WINDOW_HEIGHT, BACKGROUND_COLOR, PLAYER_SCALE};
 use constants::{VERTICAL_WINDOW_HEIGHT, BACKGROUND_COLOR, PLAYER_SCALE, MOVEMENT_SCALE_PER_SECOND};

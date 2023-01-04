@@ -5,13 +5,15 @@ use bevy::{
 
 use crate::{Simulating, Gradient, GradientOperation, GameState, GradientOperationState};
 
+use crate::ui_functions::{ui_function_creator_setup, FunctionComponentPlugin};
+
 use crate::constants::{
     NORMAL_BUTTON_COLOR, 
     HOVERED_BUTTON_COLOR,
     PRESSED_BUTTON_COLOR,
     BUTTON_WIDTH,
     BUTTON_HEIGHT,
-    BUTTONS_PER_DIMENSION,
+    MAX_COMPONENTS_PER_DIMENSION,
     BUTTON_SPACING,
     SIM_BUTTON_OFF,
     SIM_BUTTON_ON,
@@ -24,6 +26,7 @@ use crate::constants::{
     LEVEL_COMPLETE_TEXT_COLOR
 };
 
+#[derive(Clone, Copy)]
 /// whether or not a button is for x or y
 pub enum ButtonXY {
     X,
@@ -106,6 +109,7 @@ fn ui_setup(
                 flex_direction: FlexDirection::Column,
                 ..default()
             },
+            z_index: ZIndex::Global(0),
             ..default()
         })
         .with_children(|parent| {
@@ -260,252 +264,263 @@ fn ui_setup(
 
                 });
 
-            // x and y components text and add/multiply button
             parent
+                // devote 30% of screen to function component ui
                 .spawn(NodeBundle {
                     style: Style {
-                        size: Size::new(Val::Percent(100.), Val::Percent(40.)),
-                        justify_content: JustifyContent::SpaceAround, // align to bottom of screen
-                        align_content: AlignContent::SpaceAround, // align to bottom of screen
-                        align_items: AlignItems::FlexEnd, // align to bottom of screen
-                        flex_direction: FlexDirection::Row, // align button sets in column
+                        size: Size::new(Val::Percent(100.), Val::Percent(30.)),
                         ..default()
-                    }, 
+                    },
                     ..default()
                 })
-                .with_children(|parent| {
-                    parent // x and y gradient text 
-                        .spawn(NodeBundle {
-                            style: Style {
-                                size: Size::new(Val::Percent(50.), Val::Px(2. * BUTTON_HEIGHT + 3. * BUTTON_SPACING)), // size of button set
-                                flex_direction: FlexDirection::Row, // stack button sets in column
-                                justify_content: JustifyContent::SpaceBetween, // align to center of height 
-                                align_items: AlignItems::Center, // align to right
-                                ..default()
-                            },
-                            ..default()
-                        })
-                        .with_children(|parent| {
-                            parent 
-                                .spawn(NodeBundle {
-                                    style: Style {
-                                        size: Size::new(Val::Percent(75.), Val::Percent(100.)),
-                                        flex_direction: FlexDirection::Column, // stack button sets in column
-                                        justify_content: JustifyContent::Center, // align to center of height 
-                                        align_items: AlignItems::Center, // align to right
-                                        ..default()
-                                    },
-                                    ..default()
-                                })
-                                .with_children(|parent| {
-                                    parent 
-                                        .spawn( NodeBundle {
-                                            style: Style {
-                                                size: Size::new(Val::Percent(100.), Val::Px(BUTTON_HEIGHT)), // size of button
-                                                justify_content: JustifyContent::Center,
-                                                align_content: AlignContent::Center,
-                                                align_items: AlignItems::Center,
-                                                ..default()
-                                            },
-                                            ..default()
-                                        })
-                                        .with_children(|parent| {
-                                            parent
-                                                .spawn(TextBundle::from_section(
-                                                        "x = ",
-                                                        TextStyle {
-                                                            font: asset_server.load("fonts/tahoma.ttf"),
-                                                            font_size: 30.,
-                                                            color: Color::rgb(0.9, 0.9, 0.9)
-                                                        }
-                                                ))
-                                                .insert(XGradientText); // insert label that this is for the x component of the gradient 
-                                        });
-                                    
-                                    parent 
-                                        .spawn( NodeBundle {
-                                            style: Style {
-                                                size: Size::new(Val::Percent(100.), Val::Px(BUTTON_HEIGHT)), // size of button
-                                                justify_content: JustifyContent::Center,
-                                                align_content: AlignContent::Center,
-                                                align_items: AlignItems::Center,
-                                                ..default()
-                                            },
-                                            ..default()
-                                        })
-                                        .with_children(|parent| {
-                                            parent 
-                                            .spawn(TextBundle::from_section(
-                                                    "y = ",
-                                                    TextStyle {
-                                                        font: asset_server.load("fonts/tahoma.ttf"),
-                                                        font_size: 30.,
-                                                        color: Color::rgb(0.9, 0.9, 0.9)
-                                                    }
-                                            ))
-                                            .insert(YGradientText); // insert label that this is for the y component of the gradient
-                                        });
-                                    
-                                });
+                .with_children(ui_function_creator_setup(asset_server));
 
-                            parent 
-                                .spawn(NodeBundle {
-                                    style: Style {
-                                        size: Size::new(Val::Percent(25.), Val::Percent(100.)),
-                                        justify_content: JustifyContent::Center,
-                                        align_content: AlignContent::Center,
-                                        align_items: AlignItems::Center,
-                                        ..default()
-                                    },
-                                    ..default()
-                                })
-                                .with_children(|parent| {
-                                    // place button to toggle addition/multiplication
-                                    parent
-                                    .spawn(NodeBundle {
-                                        style: Style {
-                                            size: Size::new(Val::Px(BUTTON_WIDTH + 2.*BUTTON_SPACING), Val::Px(BUTTON_HEIGHT+2.*BUTTON_SPACING)),
-                                            justify_content: JustifyContent::Center,
-                                            align_items: AlignItems::Center,
-                                            ..default()
-                                        },
-                                        ..default()
-                                    })
-                                    .with_children(|parent| {
-                                        parent 
-                                            .spawn(ButtonBundle {
-                                                style: Style {
-                                                    size: Size::new(Val::Px(BUTTON_WIDTH), Val::Px(BUTTON_HEIGHT)),
-                                                    justify_content: JustifyContent::Center,
-                                                    align_items: AlignItems::Center,
-                                                    ..default()
-                                                },
-                                                background_color: NORMAL_BUTTON_COLOR.into(),
-                                                ..default()
-                                            })
-                                            .with_children(|parent| {
-                                                parent.spawn(TextBundle::from_section(
-                                                    "Add",
-                                                    TextStyle {
-                                                        font: asset_server.load("../assets/fonts/tahoma.ttf"),
-                                                        font_size: 20.0,
-                                                        color: Color::rgb(0.9, 0.9, 0.9),
-                                                    },
-                                                ));
-                                            })
-                                            .insert(OperationButton {
-                                                operation: GradientOperation::new(), // default starting
-                                            });
-                                    });
-                                });
-                        });
+            // // x and y components text and add/multiply button
+            // parent
+            //     .spawn(NodeBundle {
+            //         style: Style {
+            //             size: Size::new(Val::Percent(100.), Val::Percent(40.)),
+            //             justify_content: JustifyContent::SpaceAround, // align to bottom of screen
+            //             align_content: AlignContent::SpaceAround, // align to bottom of screen
+            //             align_items: AlignItems::FlexEnd, // align to bottom of screen
+            //             flex_direction: FlexDirection::Row, // align button sets in column
+            //             ..default()
+            //         }, 
+            //         ..default()
+            //     })
+            //     .with_children(|parent| {
+            //         parent // x and y gradient text 
+            //             .spawn(NodeBundle {
+            //                 style: Style {
+            //                     size: Size::new(Val::Percent(50.), Val::Px(2. * BUTTON_HEIGHT + 3. * BUTTON_SPACING)), // size of button set
+            //                     flex_direction: FlexDirection::Row, // stack button sets in column
+            //                     justify_content: JustifyContent::SpaceBetween, // align to center of height 
+            //                     align_items: AlignItems::Center, // align to right
+            //                     ..default()
+            //                 },
+            //                 ..default()
+            //             })
+            //             .with_children(|parent| {
+            //                 parent 
+            //                     .spawn(NodeBundle {
+            //                         style: Style {
+            //                             size: Size::new(Val::Percent(75.), Val::Percent(100.)),
+            //                             flex_direction: FlexDirection::Column, // stack button sets in column
+            //                             justify_content: JustifyContent::Center, // align to center of height 
+            //                             align_items: AlignItems::Center, // align to right
+            //                             ..default()
+            //                         },
+            //                         ..default()
+            //                     })
+            //                     .with_children(|parent| {
+            //                         parent 
+            //                             .spawn( NodeBundle {
+            //                                 style: Style {
+            //                                     size: Size::new(Val::Percent(100.), Val::Px(BUTTON_HEIGHT)), // size of button
+            //                                     justify_content: JustifyContent::Center,
+            //                                     align_content: AlignContent::Center,
+            //                                     align_items: AlignItems::Center,
+            //                                     ..default()
+            //                                 },
+            //                                 ..default()
+            //                             })
+            //                             .with_children(|parent| {
+            //                                 parent
+            //                                     .spawn(TextBundle::from_section(
+            //                                             "x = ",
+            //                                             TextStyle {
+            //                                                 font: asset_server.load("fonts/tahoma.ttf"),
+            //                                                 font_size: 30.,
+            //                                                 color: Color::rgb(0.9, 0.9, 0.9)
+            //                                             }
+            //                                     ))
+            //                                     .insert(XGradientText); // insert label that this is for the x component of the gradient 
+            //                             });
+                                    
+            //                         parent 
+            //                             .spawn( NodeBundle {
+            //                                 style: Style {
+            //                                     size: Size::new(Val::Percent(100.), Val::Px(BUTTON_HEIGHT)), // size of button
+            //                                     justify_content: JustifyContent::Center,
+            //                                     align_content: AlignContent::Center,
+            //                                     align_items: AlignItems::Center,
+            //                                     ..default()
+            //                                 },
+            //                                 ..default()
+            //                             })
+            //                             .with_children(|parent| {
+            //                                 parent 
+            //                                 .spawn(TextBundle::from_section(
+            //                                         "y = ",
+            //                                         TextStyle {
+            //                                             font: asset_server.load("fonts/tahoma.ttf"),
+            //                                             font_size: 30.,
+            //                                             color: Color::rgb(0.9, 0.9, 0.9)
+            //                                         }
+            //                                 ))
+            //                                 .insert(YGradientText); // insert label that this is for the y component of the gradient
+            //                             });
+                                    
+            //                     });
+
+            //                 parent 
+            //                     .spawn(NodeBundle {
+            //                         style: Style {
+            //                             size: Size::new(Val::Percent(25.), Val::Percent(100.)),
+            //                             justify_content: JustifyContent::Center,
+            //                             align_content: AlignContent::Center,
+            //                             align_items: AlignItems::Center,
+            //                             ..default()
+            //                         },
+            //                         ..default()
+            //                     })
+            //                     .with_children(|parent| {
+            //                         // place button to toggle addition/multiplication
+            //                         parent
+            //                         .spawn(NodeBundle {
+            //                             style: Style {
+            //                                 size: Size::new(Val::Px(BUTTON_WIDTH + 2.*BUTTON_SPACING), Val::Px(BUTTON_HEIGHT+2.*BUTTON_SPACING)),
+            //                                 justify_content: JustifyContent::Center,
+            //                                 align_items: AlignItems::Center,
+            //                                 ..default()
+            //                             },
+            //                             ..default()
+            //                         })
+            //                         .with_children(|parent| {
+            //                             parent 
+            //                                 .spawn(ButtonBundle {
+            //                                     style: Style {
+            //                                         size: Size::new(Val::Px(BUTTON_WIDTH), Val::Px(BUTTON_HEIGHT)),
+            //                                         justify_content: JustifyContent::Center,
+            //                                         align_items: AlignItems::Center,
+            //                                         ..default()
+            //                                     },
+            //                                     background_color: NORMAL_BUTTON_COLOR.into(),
+            //                                     ..default()
+            //                                 })
+            //                                 .with_children(|parent| {
+            //                                     parent.spawn(TextBundle::from_section(
+            //                                         "Add",
+            //                                         TextStyle {
+            //                                             font: asset_server.load("../assets/fonts/tahoma.ttf"),
+            //                                             font_size: 20.0,
+            //                                             color: Color::rgb(0.9, 0.9, 0.9),
+            //                                         },
+            //                                     ));
+            //                                 })
+            //                                 .insert(OperationButton {
+            //                                     operation: GradientOperation::new(), // default starting
+            //                                 });
+            //                         });
+            //                     });
+            //             });
                         
         
-                    parent
-                        // button rows
-                        .spawn(NodeBundle {
-                            style: Style {
-                                size: Size::new(Val::Percent(50.), Val::Px(2. * BUTTON_HEIGHT + 3. * BUTTON_SPACING)), // size of button set
-                                flex_direction: FlexDirection::Column, // stack button sets in column
-                                justify_content: JustifyContent::Center, 
-                                align_content: AlignContent::Center, // align to center of height
-                                align_items: AlignItems::Center, 
-                                ..default()
-                            },
-                            ..default()
-                        })
-                        .with_children(|parent| {
+            //         parent
+            //             // button rows
+            //             .spawn(NodeBundle {
+            //                 style: Style {
+            //                     size: Size::new(Val::Percent(50.), Val::Px(2. * BUTTON_HEIGHT + 3. * BUTTON_SPACING)), // size of button set
+            //                     flex_direction: FlexDirection::Column, // stack button sets in column
+            //                     justify_content: JustifyContent::Center, 
+            //                     align_content: AlignContent::Center, // align to center of height
+            //                     align_items: AlignItems::Center, 
+            //                     ..default()
+            //                 },
+            //                 ..default()
+            //             })
+            //             .with_children(|parent| {
         
-                            parent // x buttons 
-                                .spawn(NodeBundle {
-                                    style: Style {
-                                        size: Size::new(Val::Percent(100.), Val::Px(BUTTON_HEIGHT + BUTTON_SPACING)), // size of button set taking up half the screen
-                                        margin: UiRect::all(Val::Px(BUTTON_SPACING)),
-                                        flex_direction: FlexDirection::Row, // align buttons in row
-                                        align_items: AlignItems::Center, // align to center of height
-                                        ..default()
-                                    },
-                                    ..default()
-                                })
-                                .with_children(|parent| {
-                                    // spawn buttons 
-                                    for i in 0..BUTTONS_PER_DIMENSION {
-                                        parent 
-                                            .spawn(ButtonBundle {
-                                                style: Style {
-                                                    size: Size::new(Val::Px(BUTTON_WIDTH), Val::Px(BUTTON_HEIGHT)), // size of button
-                                                    margin: UiRect::all(Val::Px(BUTTON_SPACING)), // spacing between buttons
-                                                    justify_content: JustifyContent::Center, // center text
-                                                    align_items: AlignItems::Center, // center text
-                                                    ..default()
-                                                },
-                                                background_color: NORMAL_BUTTON_COLOR.into(),
-                                                ..default()
-                                            })
-                                            .with_children(|parent| {
-                                                parent
-                                                    .spawn(TextBundle::from_section(
-                                                        format!("x {}", i), // placeholer text to update later when start simulating frames
-                                                        TextStyle {
-                                                            font: asset_server.load("../assets/fonts/tahoma.ttf"),
-                                                            font_size: 20.0,
-                                                            color: Color::rgb(0.9, 0.9, 0.9),
-                                                        },
-                                                    ));
-                                            })
-                                            .insert(GradComponentButton {
-                                                id: i,
-                                                xy: ButtonXY::X,
-                                                used: false,
-                                            });
-                                    }
-                                });
-                            parent // y buttons
-                                .spawn(NodeBundle {
-                                    style: Style {
-                                        size: Size::new(Val::Percent(100.), Val::Px(BUTTON_HEIGHT + BUTTON_SPACING)), // size of button set taking up half the screen
-                                        margin: UiRect::all(Val::Px(BUTTON_SPACING)),
-                                        flex_direction: FlexDirection::Row, // align buttons in row
-                                        align_items: AlignItems::Center, // align to center of height
-                                        ..default()
-                                    },
-                                    ..default()
-                                })
-                                .with_children(|parent| {
-                                    // spawn buttons 
-                                    for i in 0..BUTTONS_PER_DIMENSION {
-                                        parent 
-                                            .spawn(ButtonBundle {
-                                                style: Style {
-                                                    size: Size::new(Val::Px(BUTTON_WIDTH), Val::Px(BUTTON_HEIGHT)), // size of button
-                                                    margin: UiRect::all(Val::Px(BUTTON_SPACING)), // spacing between buttons
-                                                    justify_content: JustifyContent::Center, // center text
-                                                    align_items: AlignItems::Center, // center text
-                                                    ..default()
-                                                },
-                                                background_color: NORMAL_BUTTON_COLOR.into(),
-                                                ..default()
-                                            })
-                                            .with_children(|parent| {
-                                                parent
-                                                    .spawn(TextBundle::from_section(
-                                                        format!("y {}", i), // placeholer text to update later when start simulating frames
-                                                        TextStyle {
-                                                            font: asset_server.load("../assets/fonts/tahoma.ttf"),
-                                                            font_size: 20.0,
-                                                            color: Color::rgb(0.9, 0.9, 0.9),
-                                                        },
-                                                    ));
-                                            })
-                                            .insert(GradComponentButton {
-                                                id: i,
-                                                xy: ButtonXY::Y,
-                                                used: false,
-                                            });
-                                    }
-                                });
-                        });
-                });
+            //                 parent // x buttons 
+            //                     .spawn(NodeBundle {
+            //                         style: Style {
+            //                             size: Size::new(Val::Percent(100.), Val::Px(BUTTON_HEIGHT + BUTTON_SPACING)), // size of button set taking up half the screen
+            //                             margin: UiRect::all(Val::Px(BUTTON_SPACING)),
+            //                             flex_direction: FlexDirection::Row, // align buttons in row
+            //                             align_items: AlignItems::Center, // align to center of height
+            //                             ..default()
+            //                         },
+            //                         ..default()
+            //                     })
+            //                     .with_children(|parent| {
+            //                         // spawn buttons 
+            //                         for i in 0..BUTTONS_PER_DIMENSION {
+            //                             parent 
+            //                                 .spawn(ButtonBundle {
+            //                                     style: Style {
+            //                                         size: Size::new(Val::Px(BUTTON_WIDTH), Val::Px(BUTTON_HEIGHT)), // size of button
+            //                                         margin: UiRect::all(Val::Px(BUTTON_SPACING)), // spacing between buttons
+            //                                         justify_content: JustifyContent::Center, // center text
+            //                                         align_items: AlignItems::Center, // center text
+            //                                         ..default()
+            //                                     },
+            //                                     background_color: NORMAL_BUTTON_COLOR.into(),
+            //                                     ..default()
+            //                                 })
+            //                                 .with_children(|parent| {
+            //                                     parent
+            //                                         .spawn(TextBundle::from_section(
+            //                                             format!("x {}", i), // placeholer text to update later when start simulating frames
+            //                                             TextStyle {
+            //                                                 font: asset_server.load("../assets/fonts/tahoma.ttf"),
+            //                                                 font_size: 20.0,
+            //                                                 color: Color::rgb(0.9, 0.9, 0.9),
+            //                                             },
+            //                                         ));
+            //                                 })
+            //                                 .insert(GradComponentButton {
+            //                                     id: i,
+            //                                     xy: ButtonXY::X,
+            //                                     used: false,
+            //                                 });
+            //                         }
+            //                     });
+            //                 parent // y buttons
+            //                     .spawn(NodeBundle {
+            //                         style: Style {
+            //                             size: Size::new(Val::Percent(100.), Val::Px(BUTTON_HEIGHT + BUTTON_SPACING)), // size of button set taking up half the screen
+            //                             margin: UiRect::all(Val::Px(BUTTON_SPACING)),
+            //                             flex_direction: FlexDirection::Row, // align buttons in row
+            //                             align_items: AlignItems::Center, // align to center of height
+            //                             ..default()
+            //                         },
+            //                         ..default()
+            //                     })
+            //                     .with_children(|parent| {
+            //                         // spawn buttons 
+            //                         for i in 0..BUTTONS_PER_DIMENSION {
+            //                             parent 
+            //                                 .spawn(ButtonBundle {
+            //                                     style: Style {
+            //                                         size: Size::new(Val::Px(BUTTON_WIDTH), Val::Px(BUTTON_HEIGHT)), // size of button
+            //                                         margin: UiRect::all(Val::Px(BUTTON_SPACING)), // spacing between buttons
+            //                                         justify_content: JustifyContent::Center, // center text
+            //                                         align_items: AlignItems::Center, // center text
+            //                                         ..default()
+            //                                     },
+            //                                     background_color: NORMAL_BUTTON_COLOR.into(),
+            //                                     ..default()
+            //                                 })
+            //                                 .with_children(|parent| {
+            //                                     parent
+            //                                         .spawn(TextBundle::from_section(
+            //                                             format!("y {}", i), // placeholer text to update later when start simulating frames
+            //                                             TextStyle {
+            //                                                 font: asset_server.load("../assets/fonts/tahoma.ttf"),
+            //                                                 font_size: 20.0,
+            //                                                 color: Color::rgb(0.9, 0.9, 0.9),
+            //                                             },
+            //                                         ));
+            //                                 })
+            //                                 .insert(GradComponentButton {
+            //                                     id: i,
+            //                                     xy: ButtonXY::Y,
+            //                                     used: false,
+            //                                 });
+            //                         }
+            //                     });
+            //             });
+            //     });
         });
 }
 
@@ -574,48 +589,48 @@ fn current_level_text_update(
     }
 }
 
-/// update system for operation choice button
-fn operation_state_button_handling(
-    mut interaction_query: Query<
-        (&Interaction, &mut BackgroundColor, &Children, &mut OperationButton),
-        (Changed<Interaction>, With<Button>),
-    >,
-    mut text_query: Query<&mut Text>,
-    mut operation_state: ResMut<State<GradientOperationState>>,
-) {
-    for  (interaction, mut color, children, mut button) in &mut interaction_query { // get button interaction
-        let mut text = text_query.get_mut(children[0]).unwrap(); // get button text
+// /// update system for operation choice button
+// fn operation_state_button_handling(
+//     mut interaction_query: Query<
+//         (&Interaction, &mut BackgroundColor, &Children, &mut OperationButton),
+//         (Changed<Interaction>, With<Button>),
+//     >,
+//     mut text_query: Query<&mut Text>,
+//     mut operation_state: ResMut<State<GradientOperationState>>,
+// ) {
+//     for  (interaction, mut color, children, mut button) in &mut interaction_query { // get button interaction
+//         let mut text = text_query.get_mut(children[0]).unwrap(); // get button text
 
-        match *interaction {
-            Interaction::Clicked => {
-                *color = PRESSED_BUTTON_COLOR.into(); // change button color 
+//         match *interaction {
+//             Interaction::Clicked => {
+//                 *color = PRESSED_BUTTON_COLOR.into(); // change button color 
 
-                match button.operation {
-                    GradientOperation::Add => {
-                        button.operation = GradientOperation::Multiply; // cycle through operations 
+//                 match button.operation {
+//                     GradientOperation::Add => {
+//                         button.operation = GradientOperation::Multiply; // cycle through operations 
 
-                        text.sections[0].value = String::from("Multiply"); // update text
+//                         text.sections[0].value = String::from("Multiply"); // update text
 
-                        operation_state.set(GradientOperationState::Multiply).unwrap(); // update state
-                    },
-                    GradientOperation::Multiply => {
-                        button.operation = GradientOperation::Add; // cycle through operations 
+//                         operation_state.set(GradientOperationState::Multiply).unwrap(); // update state
+//                     },
+//                     GradientOperation::Multiply => {
+//                         button.operation = GradientOperation::Add; // cycle through operations 
 
-                        text.sections[0].value = String::from("Add"); // update text
+//                         text.sections[0].value = String::from("Add"); // update text
 
-                        operation_state.set(GradientOperationState::Add).unwrap(); // update state
-                    },
-                }
-            },
-            Interaction::Hovered => {
-                *color = HOVERED_BUTTON_COLOR.into(); // change color on hover 
-            },
-            Interaction::None => {
-                *color = NORMAL_BUTTON_COLOR.into(); // change color back on no hover/interaction   
-            },
-        }
-    }
-}
+//                         operation_state.set(GradientOperationState::Add).unwrap(); // update state
+//                     },
+//                 }
+//             },
+//             Interaction::Hovered => {
+//                 *color = HOVERED_BUTTON_COLOR.into(); // change color on hover 
+//             },
+//             Interaction::None => {
+//                 *color = NORMAL_BUTTON_COLOR.into(); // change color back on no hover/interaction   
+//             },
+//         }
+//     }
+// }
 
 /// update system for simulating button
 fn simulating_button_system(
@@ -723,146 +738,147 @@ fn simulating_button_check(
     }
 }
 
-fn grad_component_button_system(
-    mut interaction_query: Query<
-        (&Interaction, &mut BackgroundColor, &Children, &mut GradComponentButton),
-        (Changed<Interaction>, With<Button>),
-    >,
-    mut text_query: Query<&mut Text>,
-    mut gradient: Query<&mut Gradient>,
-    game_state: Query<&GameState>,
-    mut simulating_state: ResMut<State<Simulating>>,
-    operation_state: Res<State<GradientOperationState>>,
-) {
-    let mut gradient = gradient.single_mut(); // get gradient
-    let game_state = game_state.single(); // get game state
+// fn grad_component_button_system(
+//     mut interaction_query: Query<
+//         (&Interaction, &mut BackgroundColor, &Children, &mut GradComponentButton),
+//         (Changed<Interaction>, With<Button>),
+//     >,
+//     mut text_query: Query<&mut Text>,
+//     mut gradient: Query<&mut Gradient>,
+//     game_state: Query<&GameState>,
+//     mut simulating_state: ResMut<State<Simulating>>,
+//     operation_state: Res<State<GradientOperationState>>,
+// ) {
+//     let mut gradient = gradient.single_mut(); // get gradient
+//     let game_state = game_state.single(); // get game state
 
-    for (interaction, mut color, children, mut button) in &mut interaction_query {
-        let mut text = text_query.get_mut(children[0]).unwrap(); // get text of button
-        match *interaction {
-            Interaction::Clicked => {
-                // if any button is clicked for any reason, stop simulating 
-                match simulating_state.current() {
-                    Simulating::Simulating => {
-                        simulating_state.set(Simulating::NotSimulating).unwrap(); // only change if not already in state
-                    }
-                    Simulating::NotSimulating => {}
-                }
+//     for (interaction, mut color, children, mut button) in &mut interaction_query {
+//         let mut text = text_query.get_mut(children[0]).unwrap(); // get text of button
+//         match *interaction {
+//             Interaction::Clicked => {
+//                 // if any button is clicked for any reason, stop simulating 
+//                 match simulating_state.current() {
+//                     Simulating::Simulating => {
+//                         simulating_state.set(Simulating::NotSimulating).unwrap(); // only change if not already in state
+//                     }
+//                     Simulating::NotSimulating => {}
+//                 }
 
-                if button.used { // if button is already used 
-                    // remove corresponding function from gradient 
-                    match button.xy {
-                        ButtonXY::X => {
-                            gradient.remove_x_function(button.id);
-                        },
-                        ButtonXY::Y => {
-                            gradient.remove_y_function(button.id);
-                        }
-                    }
+//                 if button.used { // if button is already used 
+//                     // remove corresponding function from gradient 
+//                     match button.xy {
+//                         ButtonXY::X => {
+//                             gradient.remove_x_function(button.id);
+//                         },
+//                         ButtonXY::Y => {
+//                             gradient.remove_y_function(button.id);
+//                         }
+//                     }
 
-                    *color = NORMAL_BUTTON_COLOR.into(); // change color back to normal 
-                    text.sections[0].style.color = NORMAL_BUTTON_TEXT_COLOR; // change text color back to normal
-                    button.used = false; // set button to unused 
-                } else { // if button is not used 
-                    // add corresponding function to gradient 
-                    match button.xy {
-                        ButtonXY::X => {
-                            // add function to gradient 
-                            gradient.add_x_function(
-                                button.id, // take button id as function id
-                                match operation_state.current() {GradientOperationState::Add => {GradientOperation::Add}, GradientOperationState::Multiply => {GradientOperation::Multiply}}, // operation based on state 
-                                game_state.level_info[game_state.current_level as usize].x_functions[button.id as usize].1, // get function
-                                game_state.level_info[game_state.current_level as usize].x_functions[button.id as usize].0.clone() // get string representing function
-                            );
+//                     *color = NORMAL_BUTTON_COLOR.into(); // change color back to normal 
+//                     text.sections[0].style.color = NORMAL_BUTTON_TEXT_COLOR; // change text color back to normal
+//                     button.used = false; // set button to unused 
+//                 } else { // if button is not used 
+//                     // add corresponding function to gradient 
+//                     match button.xy {
+//                         ButtonXY::X => {
+//                             // add function to gradient 
+//                             gradient.add_x_function(
+//                                 button.id, // take button id as function id
+//                                 match operation_state.current() {GradientOperationState::Add => {GradientOperation::Add}, GradientOperationState::Multiply => {GradientOperation::Multiply}}, // operation based on state 
+//                                 game_state.level_info[game_state.current_level as usize].x_functions[button.id as usize].1, // get function
+//                                 game_state.level_info[game_state.current_level as usize].x_functions[button.id as usize].0.clone() // get string representing function
+//                             );
 
-                        },
-                        ButtonXY::Y => {
-                            // add function to gradient 
-                            gradient.add_y_function(
-                                button.id, // take button id as function id
-                                match operation_state.current() {GradientOperationState::Add => {GradientOperation::Add}, GradientOperationState::Multiply => {GradientOperation::Multiply}}, // operation based on state
-                                game_state.level_info[game_state.current_level as usize].y_functions[button.id as usize].1, // get function
-                                game_state.level_info[game_state.current_level as usize].y_functions[button.id as usize].0.clone() // get string representing function
-                            );
-                        },
-                    }
+//                         },
+//                         ButtonXY::Y => {
+//                             // add function to gradient 
+//                             gradient.add_y_function(
+//                                 button.id, // take button id as function id
+//                                 match operation_state.current() {GradientOperationState::Add => {GradientOperation::Add}, GradientOperationState::Multiply => {GradientOperation::Multiply}}, // operation based on state
+//                                 game_state.level_info[game_state.current_level as usize].y_functions[button.id as usize].1, // get function
+//                                 game_state.level_info[game_state.current_level as usize].y_functions[button.id as usize].0.clone() // get string representing function
+//                             );
+//                         },
+//                     }
 
-                    *color = PRESSED_BUTTON_COLOR.into(); // change color to pressed 
-                    text.sections[0].style.color = PRESSED_BUTTON_TEXT_COLOR; // change text color to pressed
-                    button.used = true; // set button to used 
-                }
-            },
-            Interaction::Hovered => {
-                if button.used {
-                    *color = HOVERED_PRESSED_BUTTON_COLOR.into(); // if pressed, different color change on hover then when not pressed 
-                } else {
-                    *color = HOVERED_BUTTON_COLOR.into(); // color change to indicate hover
-                }
-            },
-            Interaction::None => {
-                // on every None interaction, update button text (instead of extra function)
-                match button.xy {
-                    ButtonXY::X => {
-                        text.sections[0].value = game_state.level_info[game_state.current_level as usize].x_functions[button.id as usize].0.clone(); // get string representing function
-                    },
-                    ButtonXY::Y => {
-                        text.sections[0].value = game_state.level_info[game_state.current_level as usize].y_functions[button.id as usize].0.clone(); // get string representing function
-                    },
-                }
+//                     *color = PRESSED_BUTTON_COLOR.into(); // change color to pressed 
+//                     text.sections[0].style.color = PRESSED_BUTTON_TEXT_COLOR; // change text color to pressed
+//                     button.used = true; // set button to used 
+//                 }
+//             },
+//             Interaction::Hovered => {
+//                 if button.used {
+//                     *color = HOVERED_PRESSED_BUTTON_COLOR.into(); // if pressed, different color change on hover then when not pressed 
+//                 } else {
+//                     *color = HOVERED_BUTTON_COLOR.into(); // color change to indicate hover
+//                 }
+//             },
+//             Interaction::None => {
+//                 // on every None interaction, update button text (instead of extra function)
+//                 match button.xy {
+//                     ButtonXY::X => {
+//                         text.sections[0].value = game_state.level_info[game_state.current_level as usize].x_functions[button.id as usize].0.clone(); // get string representing function
+//                     },
+//                     ButtonXY::Y => {
+//                         text.sections[0].value = game_state.level_info[game_state.current_level as usize].y_functions[button.id as usize].0.clone(); // get string representing function
+//                     },
+//                 }
                 
-                if button.used {
-                    *color = PRESSED_BUTTON_COLOR.into(); // if function has been added, changed to toggled color 
+//                 if button.used {
+//                     *color = PRESSED_BUTTON_COLOR.into(); // if function has been added, changed to toggled color 
 
-                    text.sections[0].style.color = PRESSED_BUTTON_TEXT_COLOR; // change text color when pressed 
-                } else {
-                    *color = NORMAL_BUTTON_COLOR.into(); // if not currently toggled, change to normal color
+//                     text.sections[0].style.color = PRESSED_BUTTON_TEXT_COLOR; // change text color when pressed 
+//                 } else {
+//                     *color = NORMAL_BUTTON_COLOR.into(); // if not currently toggled, change to normal color
 
-                    text.sections[0].style.color = NORMAL_BUTTON_TEXT_COLOR; // change text color when not pressed
-                }
+//                     text.sections[0].style.color = NORMAL_BUTTON_TEXT_COLOR; // change text color when not pressed
+//                 }
                 
-            },
-        }
-    }
-}
+//             },
+//         }
+//     }
+// }
 
-/// function for updating the x gradient text 
-fn x_gradient_text_system(
-    mut text_query: Query<&mut Text, With<XGradientText>>,
-    gradient: Query<&Gradient>,
-) {
-    let gradient = gradient.single(); // get gradient
+// /// function for updating the x gradient text 
+// fn x_gradient_text_system(
+//     mut text_query: Query<&mut Text, With<XGradientText>>,
+//     gradient: Query<&Gradient>,
+// ) {
+//     let gradient = gradient.single(); // get gradient
 
-    let mut text = text_query.single_mut(); // get text
+//     let mut text = text_query.single_mut(); // get text
 
-    // update text 
-    text.sections[0].value = format!("x = {}", gradient.x_text());
-}
+//     // update text 
+//     text.sections[0].value = format!("x = {}", gradient.x_text());
+// }
 
-/// function for updating the y gradient text
-fn y_gradient_text_system(
-    mut text_query: Query<&mut Text, With<YGradientText>>,
-    gradient: Query<&Gradient>,
-) {
-    let gradient = gradient.single(); // get gradient
+// /// function for updating the y gradient text
+// fn y_gradient_text_system(
+//     mut text_query: Query<&mut Text, With<YGradientText>>,
+//     gradient: Query<&Gradient>,
+// ) {
+//     let gradient = gradient.single(); // get gradient
 
-    let mut text = text_query.single_mut(); // get text
+//     let mut text = text_query.single_mut(); // get text
 
-    // update text 
-    text.sections[0].value = format!("y = {}", gradient.y_text());
-}
+//     // update text 
+//     text.sections[0].value = format!("y = {}", gradient.y_text());
+// }
 pub struct UiPlugin;
 
 impl Plugin for UiPlugin {
     fn build(&self, app: &mut App) {
         app.add_startup_system(ui_setup);
-        app.add_system(grad_component_button_system);
+        // app.add_system(grad_component_button_system);
         app.add_system(simulating_button_system);
         app.add_system(simulating_button_check);
-        app.add_system(x_gradient_text_system);
-        app.add_system(y_gradient_text_system);
-        app.add_system(operation_state_button_handling);
+        // app.add_system(x_gradient_text_system);
+        // app.add_system(y_gradient_text_system);
+        // app.add_system(operation_state_button_handling);
         app.add_system(current_level_text_update);
         app.add_system(new_level_text_system);
         app.add_system(update_gas_collected_text);
+        app.add_plugin(FunctionComponentPlugin);
     }
 }
