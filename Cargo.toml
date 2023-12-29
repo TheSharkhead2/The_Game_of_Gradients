@@ -6,4 +6,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-bevy = "0.9"
+leptos = { version = "0.5.2", features = ["csr", "nightly"] }
+bevy = "0.12"
+bevy_asset_loader = "0.18.0"
+web-sys = { version = "0.3" }

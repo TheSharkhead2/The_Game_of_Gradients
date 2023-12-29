@@ -1,358 +1,140 @@
-use std::f32::consts::PI;
+use leptos::*;
 
-use bevy::{
-    prelude::*,
-    render::camera::ScalingMode,
-    asset::AssetServer
-};
+use bevy::{asset::AssetServer, prelude::*, render::camera::ScalingMode, window::WindowResolution};
 
-mod constants; 
-mod gradient_field;
-mod ui;
-mod level;
+use the_game_of_gradients::{MainApp, MainAppProps};
+
+use bevy::asset::LoadState;
+use web_sys::console;
+
+// use std::f32::consts::PI;
+// mod constants;
+// mod gradient_field;
+// mod level;
+// mod ui;
 
 //use constants::{TICK_TIME, VERTICAL_WINDOW_HEIGHT, BACKGROUND_COLOR, PLAYER_SCALE};
-use constants::{VERTICAL_WINDOW_HEIGHT, BACKGROUND_COLOR, PLAYER_SCALE, MOVEMENT_SCALE_PER_SECOND};
+// use constants::{
+//     BACKGROUND_COLOR, MOVEMENT_SCALE_PER_SECOND, PLAYER_SCALE, VERTICAL_WINDOW_HEIGHT,
+// };
+use the_game_of_gradients::BACKGROUND_COLOR;
 
-use gradient_field::{GradientArrowPlugin, Gradient, GradientOperation, GradientOperationState};
+use the_game_of_gradients::{
+    GameAssets, GameLoadingState, Gradient, GradientArrowPlugin, GradientOperation,
+    GradientOperationState,
+};
 
-use ui::{UiPlugin, NewLevelText, ButtonXY};
+use the_game_of_gradients::{initialize_gamestate, setup, spawn_player};
 
-use level::{LevelPlugin};
+use bevy_asset_loader::prelude::*;
 
-#[derive(Clone, Debug)]
-/// struct to store level information 
-pub struct Level {
-    pub level_number: u32, // level number
-    pub start_location: (f32, f32), // starting location
-    pub end_location: (f32, f32), // ending location
-    pub x_functions: Vec<(String, fn(f32, f32) -> f32)>, // functions available for x dimension (String representation of function, function itself)
-    pub y_functions: Vec<(String, fn(f32, f32) -> f32)>, // functions available for y dimension (String representation of function, function itself)
-    pub gas_locations: Vec<(f32, f32)>, // locations of gas stops
-    pub tick_time: f32,
-}
+// use ui::{ButtonXY, NewLevelText, UiPlugin};
 
-#[derive(Component, Clone, Debug)]
-/// Game state. Stores relevant information about the game
-pub struct GameState {
-    pub level_info: Vec<Level>, // essentially a constant that includes all information about levels for the game
-    pub current_level: u32, // current level number
-    pub gas_collected: Vec<u32>, // number of gas stops collected as a one-hot encoded vector
-}
+// use level::LevelPlugin;
 
-#[derive(Clone, Debug, Hash, PartialEq, Eq,)]
-/// enum to store information on simulating or not
-pub enum Simulating {
-    Simulating,
-    NotSimulating,
-}
+fn testing(asset_server: Res<AssetServer>) {
+    let player_asset: Handle<Image> = asset_server.load("player.png");
 
-#[derive(Component)]
-pub struct Player {
-    pub x: f32, // x position of player
-    pub y: f32, // y position of player
-}
-
-impl GameState {
-    /// Initialize new player with basic level info 
-    pub fn new() -> Self {
-        GameState {
-            level_info: vec![
-                Level {
-                    // Linear Function
-                    level_number: 0, 
-                    start_location: (-15., -15.),
-                    end_location: (0., 0.),
-                    x_functions: vec![
-                        ("x^2".into(), |x, _y| x.powf(2.)), 
-                        ("1".into(), |_x, _y| 1.),
-                        ("-1".into(), |_x, _y| -1.),
-                        ("y".into(), |_x, y| y),
-                    ],
-                    y_functions: vec![
-                        ("-100".into(), |_x, _y| -100.), 
-                        ("1".into(), |_x, _y| 1.),
-                        ("x".into(), |x, _y| x),
-                        ("y".into(), |_x, y| y),
-                    ],
-                    gas_locations: Vec::new(),
-                    tick_time: 0.012,
-                },
-                Level {
-                    level_number: 1, 
-                    start_location: (15., -5.),
-                    end_location: (0., 9.),
-                    x_functions: vec![
-                        ("x^2".into(), |x, _y| x.powf(2.)), 
-                        ("-3".into(), |_x, _y| -3.),
-                        ("x/2".into(), |x, _y| (x/2.)),
-                        ("y".into(), |_x, y| y),
-                    ],
-                    y_functions: vec![
-                        ("10".into(), |_x, _y| 10.), 
-                        ("1/2".into(), |_x, _y| (1./2.)),
-                        ("cosx".into(), |x, _y| x.cos()),
-                        ("y".into(), |_x, y| y),
-                    ],
-                    gas_locations: Vec::new(),
-                    tick_time: 0.01,
-                },
-                Level {
-                    level_number: 2, 
-                    start_location: (-11.7,-14.8),
-                    end_location: (14.5,12.),
-                    x_functions: vec![
-                        ("y^2".into(), |_x, y| y.powf(2.)), 
-                        ("-3".into(), |_x, _y| -3.),
-                        ("x/2".into(), |x, _y| (x/2.)),
-                        ("y".into(), |_x, y| y),
-                    ],
-                    y_functions: vec![
-                        ("10".into(), |_x, _y| 10.), 
-                        ("1/2".into(), |_x, _y| (1./2.)),
-                        ("cosx".into(), |x, _y| x.cos()),
-                        ("x^2".into(), |x, _y| x.powf(2.)),
-                    ],
-                    gas_locations: Vec::new(),
-                    tick_time: 0.0001,
-                },
-                Level {
-                    level_number: 3, 
-                    start_location: (0.,0.),
-                    end_location: (3., 9.),
-                    x_functions: vec![
-                        ("y^2".into(), |_x, y| y.powf(2.)), 
-                        ("1".into(), |_x, _y| 1.),
-                        ("x/2".into(), |x, _y| (x/2.)),
-                        ("y".into(), |_x, y| y),
-                    ],
-                    y_functions: vec![
-                        ("x^2".into(), |x, _y| x.powf(2.)), 
-                        ("y".into(), |_x, y| y),
-                        ("1".into(), |_x, _y| 1.),
-                        ("-1".into(), |_x, _y| -1.),
-                        ],
-                    gas_locations: Vec::new(),
-                    tick_time: 0.005,
-                },
-                Level {
-                    // Spiral Level
-                    level_number: 4, 
-                    start_location: (-15., -15.),
-                    end_location: (0., 0.),
-                    x_functions: vec![
-                        ("x".into(), |x, _y| x), 
-                        ("y".into(), |_x, y| y),
-                        ("1".into(), |_x, _y| 1.),
-                        ("-1".into(), |_x, _y| -1.),
-                    ],
-                    y_functions: vec![
-                        ("x".into(), |x, _y| x), 
-                        ("y".into(), |_x, y| y),
-                        ("1".into(), |_x, _y| 1.),
-                        ("-1".into(), |_x, _y| -1.),
-                        ],
-                    gas_locations: vec![
-                        (-14., -7.5),
-                        (-10., 0.),
-                        (0., 2.1),
-                    ],
-                    tick_time: 0.001,
-                },
-                Level {
-                    level_number: 5, 
-                    start_location: (-15.,15.),
-                    end_location: (-1., -18.5),
-                    x_functions: vec![
-                        ("cbrt(x)".into(), |x, _y| x.cbrt()), 
-                        ("300".into(), |_x, _y| 300.),
-                        ("x/2".into(), |x, _y| (x/2.)),
-                        ("y".into(), |_x, y| y),
-                    ],
-                    y_functions: vec![
-                        ("x/2".into(), |x, _y| x/2.), 
-                        ("y".into(), |_x, y| y),
-                        ("cbrt(y)".into(), |x, _y| x.cbrt()),
-                        ("-1".into(), |_x, _y| -1.),
-                        ],
-                    gas_locations: vec![(-14.,-16.), (-25.,5.),(-25.,-5.)],
-                    tick_time: 0.001,
-                },
-                Level {
-                    level_number: 6, 
-                    start_location: (-15.,15.),
-                    end_location: (-15., -15.),
-                    x_functions: vec![
-                        ("cbrt(x)".into(), |x, _y| x.cbrt()), 
-                        ("300".into(), |_x, _y| 300.),
-                        ("x/2".into(), |x, _y| (x/2.)),
-                        ("y".into(), |_x, y| y),
-                    ],
-                    y_functions: vec![
-                        ("x/2".into(), |x, _y| x/2.), 
-                        ("y".into(), |_x, y| y),
-                        ("cbrt(y)".into(), |x, _y| x.cbrt()),
-                        ("-1".into(), |_x, _y| -1.),
-                        ],
-                    gas_locations: vec![ (26.,0.),(0.,18.)],
-                    tick_time: 0.001,
-                },
-                Level {
-                    // Circle Function
-                    level_number: 7, 
-                    start_location: (-10., 5.),
-                    end_location: (10., 4.3),
-                    x_functions: vec![
-                        ("x^2".into(), |x, _y| x.powf(2.)), 
-                        ("y".into(), |_x, y| y),
-                        ("1".into(), |_x, _y| 1.),
-                        ("-1".into(), |_x, _y| -1.),
-                    ],
-                    y_functions: vec![
-                        ("x".into(), |x, _y| x), 
-                        ("y/2".into(), |_x, y| y/2.),
-                        ("1".into(), |_x, _y| 1.),
-                        ("-1".into(), |_x, _y| -1.),
-                        ],
-                    gas_locations: vec![
-                        (0., 15.),
-                        
-
-                    ],
-                    tick_time: 0.001,
-                },
-                Level {
-                    // Circle Function
-                    level_number: 8, 
-                    start_location: (-10., 0.),
-                    end_location: (10., 0.),
-                    x_functions: vec![
-                        ("x^2".into(), |x, _y| x.powf(2.)), 
-                        ("y".into(), |_x, y| y),
-                        ("1".into(), |_x, _y| 1.),
-                        ("-1".into(), |_x, _y| -1.),
-                    ],
-                    y_functions: vec![
-                        ("x".into(), |x, _y| x), 
-                        ("y/2".into(), |_x, y| y/2.),
-                        ("1".into(), |_x, _y| 1.),
-                        ("-1".into(), |_x, _y| -1.),
-                        ],
-                    gas_locations: vec![
-                        (0., 10.),
-                        (0., -10.),
-                    ],
-                    tick_time: 0.001,
-                },
-                Level {
-                    level_number: 9, 
-                    start_location: (2., 0.3),
-                    end_location: (0., -10.),
-                    x_functions: vec![
-                        ("x".into(), |x, _y| x), 
-                        ("y".into(), |_x, y| y),
-                        ("xy".into(), |x, y| x*y),
-                        ("-1".into(), |_x, _y| -1.),
-                    ],
-                    y_functions: vec![
-                        ("x".into(), |x, _y| x), 
-                        ("y".into(), |_x, y| y),
-                        ("1".into(), |_x, _y| 1.),
-                        ("-1".into(), |_x, _y| -1.),
-                        ],
-                    gas_locations: vec![
-                        (2., 4.),
-                        (17., 0.),
-                    ],
-                    tick_time: 0.001,
-                },
-            ],
-            current_level: 0,
-            gas_collected: vec![0],
+    let load_state = asset_server.get_load_state(&player_asset);
+    if let Some(load_state) = load_state {
+        match load_state {
+            LoadState::NotLoaded => console::log_1(&"not loaded".into()),
+            LoadState::Loading => console::log_1(&"loading".into()),
+            LoadState::Loaded => console::log_1(&"loaded".into()),
+            LoadState::Failed => console::log_1(&"failed".into()),
         }
+    } else {
+        console::log_1(&"couldn't get player load state".into());
     }
 }
 
+// /// move player
+// fn player_movement(
+//     mut player: Query<(&mut Player, &mut Transform)>,
+//     gradient: Query<&Gradient>,
+//     simulating_state: Res<State<Simulating>>,
+//     game_state: Query<&GameState>,
+//     time: Res<Time>,
+// ) {
+//     let gradient = gradient.single(); // should be exclusively 1 gradient
+//     let game_state = game_state.single(); // should be exclusively 1 game state
+
+//     match simulating_state.current() {
+//         Simulating::Simulating => {
+//             // move player on if currently simulating
+//             for (mut player_struct, mut transform) in player.iter_mut() {
+//                 transform.translation.x += game_state.level_info[game_state.current_level as usize]
+//                     .tick_time
+//                     * gradient.x(transform.translation.x, transform.translation.y)
+//                     * MOVEMENT_SCALE_PER_SECOND
+//                     * time.delta_seconds();
+//                 transform.translation.y += game_state.level_info[game_state.current_level as usize]
+//                     .tick_time
+//                     * gradient.y(transform.translation.x, transform.translation.y)
+//                     * MOVEMENT_SCALE_PER_SECOND
+//                     * time.delta_seconds();
+
+//                 // update player struct coords
+//                 player_struct.x = transform.translation.x;
+//                 player_struct.y = transform.translation.y;
+
+//                 // update player angle
+//                 let angle = gradient
+//                     .y(transform.translation.x, transform.translation.y)
+//                     .atan2(gradient.x(transform.translation.x, transform.translation.y))
+//                     - PI / 2.;
+//                 transform.rotation = Quat::from_rotation_z(angle);
+//             }
+//         }
+//         Simulating::NotSimulating => {
+//             // set player to start location when not simulating
+//             for (mut player_struct, mut transform) in player.iter_mut() {
+//                 transform.translation.x = game_state.level_info[game_state.current_level as usize]
+//                     .start_location
+//                     .0 as f32;
+//                 transform.translation.y = game_state.level_info[game_state.current_level as usize]
+//                     .start_location
+//                     .1 as f32;
+
+//                 // update player struct coords
+//                 player_struct.x = transform.translation.x;
+//                 player_struct.y = transform.translation.y;
+//             }
+//         }
+//     }
+// }
+
 fn main() {
+    // leptos initialization
+    // mount_to_body(|| view! { <MainApp />});
+
     App::new()
         .insert_resource(ClearColor(BACKGROUND_COLOR)) // set background color of window/game
-        .add_plugins(DefaultPlugins)
-        .add_startup_system(setup)
-        .add_startup_system(spawn_player)
-        .add_startup_system(initialize_gamestate)
-        .add_state(Simulating::NotSimulating) // set initial simulating state
-        .add_system(player_movement)
-        .add_plugin(GradientArrowPlugin)
-        .add_plugin(UiPlugin)
-        .add_plugin(LevelPlugin)
-        .run();
-} 
+        .add_plugins(DefaultPlugins.set(WindowPlugin {
+            primary_window: Some(Window {
+                canvas: Some("#main-game-canvas".into()),
+                resolution: (1280., 720.).into(),
 
-/// Setup the game
-fn setup(mut commands: Commands) {
-    let mut camera_bundle = Camera2dBundle::default();
-
-    camera_bundle.projection.scaling_mode = ScalingMode::FixedVertical(VERTICAL_WINDOW_HEIGHT);
-    commands.spawn(camera_bundle);
-}
-
-/// Create player 
-fn spawn_player(mut commands: Commands, asset_server: Res<AssetServer>) {
-    commands
-        .spawn(SpriteBundle {
-            texture: asset_server.load("player.png"),        
-            transform: Transform::from_xyz(5., 0., 1.) // set initial position to (0,0)
-                    .with_scale(Vec3::new(PLAYER_SCALE, PLAYER_SCALE, 1.)) // with no scaling 
-                    .with_rotation(Quat::from_rotation_z(0.)), // with no rotation
                 ..default()
-            
-        })
-        .insert(Player {x: 0., y: 0.}); // insert player component
-        
+            }),
+            ..default()
+        }))
+        .add_loading_state(
+            LoadingState::new(GameLoadingState::AssetLoading)
+                .continue_to_state(GameLoadingState::Ready),
+        )
+        .add_collection_to_loading_state::<_, GameAssets>(GameLoadingState::AssetLoading)
+        .add_systems(
+            OnEnter(GameLoadingState::Ready),
+            (setup, initialize_gamestate, spawn_player).run_if(in_state(GameLoadingState::Ready)),
+        )
+        .add_systems(Update, testing)
+        // .add_state(Simulating::NotSimulating) // set initial simulating state
+        // .add_system(player_movement)
+        // .add_plugins(GradientArrowPlugin)
+        // .add_plugin(UiPlugin)
+        // .add_plugin(LevelPlugin)
+        .run();
 }
 
-
-/// move player 
-fn player_movement(
-    mut player: Query<(&mut Player, &mut Transform)>, 
-    gradient: Query<&Gradient>, 
-    simulating_state: Res<State<Simulating>>, 
-    game_state: Query<&GameState>,
-    time: Res<Time>,
-) {
-    let gradient = gradient.single(); // should be exclusively 1 gradient
-    let game_state = game_state.single(); // should be exclusively 1 game state
- 
-    match simulating_state.current() {
-        Simulating::Simulating => { // move player on if currently simulating 
-            for (mut player_struct, mut transform) in player.iter_mut() {
-                transform.translation.x += game_state.level_info[game_state.current_level as usize].tick_time * gradient.x(transform.translation.x, transform.translation.y) * MOVEMENT_SCALE_PER_SECOND*time.delta_seconds();
-                transform.translation.y += game_state.level_info[game_state.current_level as usize].tick_time * gradient.y(transform.translation.x, transform.translation.y) * MOVEMENT_SCALE_PER_SECOND*time.delta_seconds();
-
-                // update player struct coords
-                player_struct.x = transform.translation.x;
-                player_struct.y = transform.translation.y;
-
-                // update player angle 
-                let angle = gradient.y(transform.translation.x, transform.translation.y).atan2(gradient.x(transform.translation.x, transform.translation.y)) - PI/2.;
-                transform.rotation = Quat::from_rotation_z(angle);
-            }
-        }, 
-        Simulating::NotSimulating => { // set player to start location when not simulating
-            for (mut player_struct, mut transform) in player.iter_mut() {
-                transform.translation.x = game_state.level_info[game_state.current_level as usize].start_location.0 as f32;
-                transform.translation.y = game_state.level_info[game_state.current_level as usize].start_location.1 as f32;
-
-                // update player struct coords 
-                player_struct.x = transform.translation.x;
-                player_struct.y = transform.translation.y;
-            }
-        },
-    } 
-}
-
-/// Setup game state 
-fn initialize_gamestate(mut commands: Commands) {
-    commands
-        .spawn(GameState::new()); // spawn game state
-}
+// this is useful: https://github.com/kristoff3r/yew-bevy-example
